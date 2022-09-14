@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73ab5be85b1ff854ea7a50a147d3b595, type: 3}
+  m_Name: Wood
+  m_EditorClassIdentifier: 
+  Icon: {fileID: 2800000, guid: 73a02b80597122e4f851216c4ef65eb4, type: 3}
+  type: 3
+  description: Used for crafting, building and to warm yourself on cold nights, BRRR!
+  maxStack: 50

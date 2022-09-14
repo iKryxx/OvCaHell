@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37b1d5365f86b5344b3b1d88a124544d, type: 3}
+  m_Name: Wooden Axe
+  m_EditorClassIdentifier: 
+  Icon: {fileID: 2800000, guid: 9926c5ba9440bc047992bd215b193938, type: 3}
+  type: 2
+  description: 
+  maxStack: 1
+  toolType: 0
+  toolStrength: 10
