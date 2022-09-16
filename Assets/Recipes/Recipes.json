@@ -1,0 +1,33 @@
+{
+    "Recipes":[
+        {
+            "shapeless":true,
+            "recipe":[
+                "Y"
+            ],
+            "keys":[
+                {
+                    "key":"Y",
+                    "item":"Wood"
+                }
+            ],
+            "result":"wood_planks",
+            "count":4
+        },
+        {
+            "shapeless":false,
+            "recipe":[
+                "X",
+                "X"
+            ],
+            "keys":[
+                {
+                    "key":"X",
+                    "item":"Wood_Planks"
+                }
+            ],
+            "result":"Stick",
+            "count":4
+        }
+    ]
+}

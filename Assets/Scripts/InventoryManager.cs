@@ -72,7 +72,6 @@ public class InventoryManager : MonoBehaviour
         if(temp != null)inventory.Container.Remove(temp);
 
         List<int> used = new List<int>();
-        checkInput();
         foreach (var slot in inventory.Container)
         {
             used.Add(slot.index);
@@ -117,13 +116,6 @@ public class InventoryManager : MonoBehaviour
     }
 
     [HideInInspector] public bool shift = false;
-    void checkInput()
-    {
-
-        inventory.manageSelection(Input.GetAxis("Mouse ScrollWheel"));
-        if(getNumeralInput() != -1)
-            inventory.currentSelection = getNumeralInput() - 1; 
-    }
 
     public void tryPickUp()
     {
@@ -145,11 +137,5 @@ public class InventoryManager : MonoBehaviour
             else Destroy(_item.gameObject);
         }
     }
-    int getNumeralInput()
-    {
-        for (int i = 49; i <= 57; i++)
-            if (Input.GetKeyUp((KeyCode)i))
-                return i - 48;
-        return -1;
-    }
+    
 }

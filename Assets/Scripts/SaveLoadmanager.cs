@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
+
+using System.Threading;
 using static DataManager.DataManagement;
 
 public class SaveLoadmanager : MonoBehaviour
@@ -111,8 +113,7 @@ public class SaveLoadmanager : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitForSeconds(5);
-            Debug.Log("Saved the Game");
+            yield return new WaitForSeconds(1);
             SaveInventory();
             SaveBackPacks();
         }

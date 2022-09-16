@@ -14,17 +14,24 @@ public class BackPackManager : MonoBehaviour
 
     public void OpenUI(BackPackObject obj)
     {
+        if (GLOBAL.ISINPUTBLOCKED)
+            return;
+
+        GLOBAL.ISINPUTBLOCKED = true;
+
         currBP = obj;
         isUIopen = true;
         STORAGE.SetActive(true);
 
         for (int i = 0; i < obj.Inventory.maxSize; i++)
         {
-            GameObject curr = Instantiate(PREFAB, STORAGE.transform);
+            Instantiate(PREFAB, STORAGE.transform);
         }
     }
     public void CloseUI()
     {
+        GLOBAL.ISINPUTBLOCKED = false;
+
         currBP = null;
         isUIopen =false;
 

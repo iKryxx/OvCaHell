@@ -67,7 +67,11 @@ public class DebugController : MonoBehaviour
 
     public void OnConsole()
     {
+        if (GLOBAL.ISINPUTBLOCKED)
+            return;
+
         showConsole = true;
+        GLOBAL.ISINPUTBLOCKED = true;
     }
     private void OnGUI()
     {
@@ -220,8 +224,11 @@ public class DebugController : MonoBehaviour
 
             }
         }
-        if (((aCommand != null && aCommand.commandId != "help") || aCommand == null ) &&output == "")
+        if (((aCommand != null && aCommand.commandId != "help") || aCommand == null) && output == "")
+        {
             showConsole = false;
+            GLOBAL.ISINPUTBLOCKED = false;
+        }
         
         input = "";
     }

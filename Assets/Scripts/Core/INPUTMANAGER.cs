@@ -10,10 +10,12 @@ public class INPUTMANAGER : MonoBehaviour
 
     //Classes
     public PlayerMovement playerMovement;
-
+    public DebugController debugContoller;
+    public BackPackManager backpackManager;
     //Variables
     int x = 0;
     int y = 0;
+
 
     int tbc = 0;
 
@@ -22,12 +24,13 @@ public class INPUTMANAGER : MonoBehaviour
     System.Type equipment = typeof(EquipmentObject);
     System.Type food = typeof(FoodObject);
     System.Type tool = typeof(ToolObject);
-
-    public BackPackManager backpackManager;
     //---------------------------------------------------------
 
     void MoveInput()
     {
+        if (GLOBAL.ISINPUTBLOCKED)
+            return;
+
         x = 0;
         y = 0;
 
@@ -81,6 +84,15 @@ public class INPUTMANAGER : MonoBehaviour
 
         
     }
+    void checkSelectionInput()
+    {
+        if (GLOBAL.ISINPUTBLOCKED)
+            return;
+
+        InventoryManager.instance.inventory.manageSelection(Input.GetAxis("Mouse ScrollWheel"));
+        if (getNumeralInput() != -1 && !backpackManager.isUIopen)
+            InventoryManager.instance.inventory.currentSelection = getNumeralInput() - 1;
+    }
 
     void OnAttack()
     {
@@ -115,6 +127,7 @@ public class INPUTMANAGER : MonoBehaviour
             backpackManager.CloseUI();
             return;
         }
+
     }
     private void Update()
     {
@@ -138,5 +151,19 @@ public class INPUTMANAGER : MonoBehaviour
         //if (!AnimationManager.instance.anim.isPlaying && playerMovement.triggerInput)
         //    playerMovement.triggerInput = false; 
         MoveInput();
+        checkSelectionInput();
+
+    }
+
+
+
+
+
+    int getNumeralInput()
+    {
+        for (int i = 49; i <= 57; i++)
+            if (Input.GetKeyUp((KeyCode)i))
+                return i - 48;
+        return -1;
     }
 }
