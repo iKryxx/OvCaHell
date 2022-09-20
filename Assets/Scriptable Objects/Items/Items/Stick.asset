@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73ab5be85b1ff854ea7a50a147d3b595, type: 3}
   m_Name: Stick
   m_EditorClassIdentifier: 
-  Icon: {fileID: 10309, guid: 0000000000000000f000000000000000, type: 0}
+  Icon: {fileID: 2800000, guid: e90bc7beee005c242810cf1568968526, type: 3}
   type: 4
   description: Crafted From Planks
   maxStack: 50

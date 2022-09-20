@@ -72,6 +72,21 @@ public class InventoryObject : ScriptableObject
         }
         return -1;
     }
+
+    public bool hasItem(ItemObject _item, int count)
+    {
+        int j = 0;
+        for (int i = 0; i < Container.Count; i++)
+        {
+            if (Container[i].item.name.Replace("(Clone)", "") == _item.name.Replace("(Clone)",""))
+                j += Container[i].amount;
+
+            if(j >= count)
+                return true;
+        }
+        return false;
+    }
+
     public int getFreeSlot(ItemObject itemObject)
     {
         if (hasItem(itemObject) != -1)
