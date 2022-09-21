@@ -40,6 +40,23 @@ public class InventoryObject : ScriptableObject
         }
         return Mathf.Max(left, 0);        
     }
+
+
+    public void RemoveItem(ItemObject _item, int Amount) {
+
+        int am = Amount;
+        foreach (var item in Container)
+        {
+            if (am == 0 )
+                return;
+            if (item.item != _item)
+                continue;
+            int toreduce = Mathf.Min(am,item.amount);
+
+            am -= toreduce;
+            item.amount -= toreduce;
+        }
+    }
     public int AddItem(ItemObject _item, int _amount, int index)
     {
         Debug.Log($"{Container == null}");
@@ -98,12 +115,32 @@ public class InventoryObject : ScriptableObject
                 try
                 {
                     if (Container[i] == null)
+                    {
                         Container[i] = new Slot(itemObject, 1, getNextIndex()); return i;
+                    }
                 }
                 catch { }
             }
         }
         return -1;
+    }
+    public int canAddItem(ItemObject obj)
+    {
+        if (Container.Count < maxSize)
+            return obj.maxStack * (maxSize-Container.Count);
+
+        int canAdd = 0;
+        for (int i = 0; i < maxSize; i++)
+        {
+            try
+            {
+                if (Container[i].item == obj && Container[i].amount < obj.maxStack)
+                    canAdd += obj.maxStack - Container[i].amount;
+            }
+            catch { }
+        }
+        
+        return canAdd;
     }
     public bool fullInventory(ItemObject item){
         if (Container.Count < maxSize)

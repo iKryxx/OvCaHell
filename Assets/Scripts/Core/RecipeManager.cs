@@ -15,14 +15,25 @@ public class RecipeManager : MonoBehaviour
 
     public List<RecipeObject> recipeObjects = new List<RecipeObject>();
 
+    public bool shouldDisplay;
+    public GameObject RecipeParent;
+
     private void Update()
     {
-        displayRecipes();
+        
+
+        if(shouldDisplay)
+            displayRecipes();
+        else
+            RecipeParent.SetActive(false);
     }
 
 
     void displayRecipes()
     {
+        RecipeParent.SetActive(true);
+        GLOBAL.ISINPUTBLOCKED = true;
+
         foreach (var recipe in recipes)
         {
             bool sd = true;
@@ -81,6 +92,22 @@ public class RecipeManager : MonoBehaviour
         c.SetText();
     }
 
+
+    public void craft(GameObject curr)
+    {
+        if (InventoryManager.instance.inventory.canAddItem(curr.toRecipe(recipeObjects).result) < curr.toRecipe(recipeObjects).count)
+            return;
+
+        foreach (var item in curr.toRecipe(recipeObjects).requiredItems)
+        {
+            InventoryManager.instance.inventory.RemoveItem(item.item, item.amount);
+        }
+        InventoryManager.instance.inventory.AddItem(curr.toRecipe(recipeObjects).result, curr.toRecipe(recipeObjects).count);
+
+
+    }
+
+
 }
 
 [System.Serializable]
@@ -128,6 +155,8 @@ public class RecipeObject
             RecipeSlot.transform.Find("Amount").GetComponent<TextMeshProUGUI>().text = $"{Recipe.count * multiplier}";
         }
     }
+
+    
 }
 public static class RecipeExtensions
 {
@@ -139,5 +168,15 @@ public static class RecipeExtensions
                 return true;
         }
         return false;
+    }
+
+    public static Recipe toRecipe(this GameObject curr, List<RecipeObject> objs)
+    {
+        foreach (var item in objs)
+        {
+            if (item.RecipeSlot == curr)
+                return item.Recipe;
+        }
+        return null;
     }
 }

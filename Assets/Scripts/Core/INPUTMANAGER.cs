@@ -84,6 +84,25 @@ public class INPUTMANAGER : MonoBehaviour
 
         
     }
+
+    void OnCraft()
+    {
+
+
+        if (GLOBAL.ISINPUTBLOCKED && !GameObject.Find("RecipeManager").GetComponent<RecipeManager>().shouldDisplay)
+            return;
+        else if (GLOBAL.ISINPUTBLOCKED && GameObject.Find("RecipeManager").GetComponent<RecipeManager>().shouldDisplay)
+        {
+            GLOBAL.ISINPUTBLOCKED = false;
+            GameObject.Find("RecipeManager").GetComponent<RecipeManager>().shouldDisplay = false;
+        }
+        else if (!GLOBAL.ISINPUTBLOCKED && !GameObject.Find("RecipeManager").GetComponent<RecipeManager>().shouldDisplay)
+        {
+            GLOBAL.ISINPUTBLOCKED = true;
+            GameObject.Find("RecipeManager").GetComponent<RecipeManager>().shouldDisplay = true;
+        }
+
+    }
     void checkSelectionInput()
     {
         if (GLOBAL.ISINPUTBLOCKED)
