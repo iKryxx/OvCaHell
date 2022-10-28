@@ -107,6 +107,14 @@ public class SaveLoadmanager : MonoBehaviour
         LoadBackPacks();
     }
 
+    [ContextMenu("Save World")]
+    void SaveWorld()
+    {
+        SaveString = A_D_WorldToString();
+        PlayerPrefs.SetString("World", SaveString);
+        Debug.Log(SaveString);
+    }
+
 
 
     private IEnumerator AutoSave()

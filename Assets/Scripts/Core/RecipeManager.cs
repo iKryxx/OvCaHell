@@ -10,27 +10,24 @@ public class RecipeManager : MonoBehaviour
     public List<Recipe> recipes = new List<Recipe>();
     public List<Recipe> CTrecipes = new List<Recipe>();
 
-    public GameObject Prefab;
-    public GameObject ReqPrefab;
+    [HideInInspector] public GameObject Prefab;
+    [HideInInspector] public GameObject ReqPrefab;
 
     public List<RecipeObject> recipeObjects = new List<RecipeObject>();
 
     public bool shouldDisplay;
-    public GameObject RecipeParent;
+    [HideInInspector] public GameObject RecipeParent;
 
     private void Update()
     {
-        
-
-        if(shouldDisplay)
-            displayRecipes();
-        else
-            RecipeParent.SetActive(false);
+        displayRecipes();
     }
 
 
     void displayRecipes()
     {
+        if (!shouldDisplay) { RecipeParent.SetActive(false); return; }
+
         RecipeParent.SetActive(true);
         GLOBAL.ISINPUTBLOCKED = true;
 

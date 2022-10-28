@@ -7,8 +7,13 @@ public class OverworldGeneration : MonoBehaviour
     public static OverworldGeneration instance;
     public EnviromentManager envo;
 
+    public LayerMask forbiddenVillage;
+    public LayerMask forbiddenHouse;
+
 
     //WorldSettings
+    public int seed;
+    public int BiomeSize;
     bool LockWorldSize = true;
     public int ChunkSize = 20;
     public GameObject ChunkParent;
@@ -26,9 +31,20 @@ public class OverworldGeneration : MonoBehaviour
     public List<Texture2D> WoodsGroundSprites = new List<Texture2D>();
     public List<Texture2D> DesertGroundSprites = new List<Texture2D>();
 
+    //Village gen
+    public float frequency; //the lower the less stretched hills
+    public float threshhold; //the lower the fewer hills
+
+    //Colliders for anti Enviroment Overlapping
+    public ContactFilter2D villageFilter = new ContactFilter2D();
+    public ContactFilter2D houseFilter = new ContactFilter2D();
+    public List<Collider2D> results = new List<Collider2D>();
+
     private void Awake()
     {
         instance = this;
+        villageFilter.SetLayerMask(forbiddenVillage);
+        houseFilter.SetLayerMask(forbiddenHouse);
     }
     void Start()
     {
@@ -46,7 +62,6 @@ public class OverworldGeneration : MonoBehaviour
         Vector2Int curr = pos.ToChunkCoords();
 
         currentChunk = chunks.GetChunkAt(curr.x, curr.y);
-        
 
         if(currentChunk == null)
             chunks.Add(new Chunk(curr.x, curr.y, GetPerlinNoiseBiome.GenerateBiomeAt(new Vector2(curr.x, curr.y))));
@@ -73,7 +88,16 @@ public class OverworldGeneration : MonoBehaviour
 
 
         _currentChunk = currentChunk;
+
+        //Generating Villages, one per frame
     }
+
+    private void GenerateVillage(Vector2Int pos)
+    {
+        if (Mathf.PerlinNoise(pos.x * frequency + seed, pos.y * frequency + seed) < threshhold)
+            VillageGen.instance.VillageGeneration(new Vector2Int(pos.x, pos.y));
+    }
+
     void GenerateNeighbours(){
         
         for (int x = -renderDistance + currentChunk.x; x <= renderDistance + currentChunk.x; x++)
@@ -81,9 +105,12 @@ public class OverworldGeneration : MonoBehaviour
             for (int y = -renderDistance + currentChunk.y; y <= renderDistance + currentChunk.y; y++)
             {
                 //if (Mathf.Abs(x - y) > renderDistance + currentChunk.y + currentChunk.x || Mathf.Abs(x-y) < -renderDistance - currentChunk.y - currentChunk.x)
-                    //continue;
+                //continue;
                 if (chunks.GetChunkAt(x, y) == null)
-                    chunks.Add(new Chunk(x, y, GetPerlinNoiseBiome.GenerateBiomeAt(new Vector2(x,y))));
+                {
+                    chunks.Add(new Chunk(x, y, GetPerlinNoiseBiome.GenerateBiomeAt(new Vector2(x, y))));
+                    GenerateVillage(new Vector2Int(x, y));
+                }
             }
         }
     }
@@ -122,7 +149,7 @@ public class OverworldGeneration : MonoBehaviour
                 List<EnviromentObject> objs = envo.enviromentObjects.getObjectOfType(ENV.type);
                 
 
-                Debug.Log(objs.Count + " " + chunk.biome.ToString());
+                //Debug.Log(objs.Count + " " + chunk.biome.ToString());
                 if (objs.Count == 0)
                     continue;
                 
@@ -134,6 +161,25 @@ public class OverworldGeneration : MonoBehaviour
 
 
                     GameObject nin = Instantiate(obj.prefab, new Vector3(x, y, 0), Quaternion.identity);
+                    if(nin.transform.GetComponentInChildren<CircleCollider2D>() != null)
+                    {
+
+                        //Debug.Log(nin.transform.GetComponentInChildren<CircleCollider2D>().OverlapCollider(filter, results) + " " + nin.transform.position.x + " "+ nin.transform.position.y);
+
+                        if (nin.transform.GetComponentInChildren<CircleCollider2D>().OverlapCollider(villageFilter,results) > 0)
+                            Destroy(nin);
+
+                    }
+                    else
+                    {
+                        nin.AddComponent<CircleCollider2D>();
+                        if (nin.transform.GetComponentInChildren<CircleCollider2D>().OverlapCollider(houseFilter, results) > 0)
+                            Destroy(nin);
+                        else
+                            Destroy(nin.GetComponent<CircleCollider2D>());
+                    }
+
+
                     nin.transform.parent = chunk.thisObject.transform.Find("Enviroment");
                     if (obj.mineable)
                     {
@@ -145,6 +191,7 @@ public class OverworldGeneration : MonoBehaviour
 
                 }
             }
+            
 
             chunk.generated = true;
             
@@ -154,6 +201,9 @@ public class OverworldGeneration : MonoBehaviour
                 if(children.name != "GroundItems" && children.name != "Enviroment")
                     sprites.Add(children.GetComponent<SpriteRenderer>().sprite);
             }
+
+            
+
         }  
     }
 }
@@ -287,7 +337,9 @@ public static class GetPerlinNoiseBiome
 
     public static biome GenerateBiomeAt(Vector2 pos)
     {
-        float perlin = Mathf.PerlinNoise(pos.x / 100 + .1f, pos.y / 100 + .1f);
+        //using seed
+        pos = pos + new Vector2(pos.x + OverworldGeneration.instance.seed * 100, pos.y + OverworldGeneration.instance.seed * 100);
+        float perlin = Mathf.PerlinNoise(pos.x / OverworldGeneration.instance.BiomeSize + .1f, pos.y / OverworldGeneration.instance.BiomeSize + .1f);
         biome bi = biome.Null;
         if (perlin < 0.2f)
             bi = biome.Desert;

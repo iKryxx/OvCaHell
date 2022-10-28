@@ -59,7 +59,7 @@ public class InventoryObject : ScriptableObject
     }
     public int AddItem(ItemObject _item, int _amount, int index)
     {
-        Debug.Log($"{Container == null}");
+        //Debug.Log($"{Container == null}");
 
 
 

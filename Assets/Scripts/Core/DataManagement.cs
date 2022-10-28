@@ -65,13 +65,13 @@ namespace DataManager
             }
             return data.Remove(data.Length - 2);
         }
-
         public static string A_C_CLEARCOMMAND()
         {
             int c = InventoryManager.instance.inventory.Container.Count;
             InventoryManager.instance.inventory.Container.Clear();
             return $"successfully cleared {c} items.";
         }
+     
         //Data
         public static string A_D_getDataOfItem(ItemObject item)
         {
@@ -203,5 +203,55 @@ namespace DataManager
             str = str.Remove(str.LastIndexOf(","), 1);
             return str;
         }
+    
+        public static string A_D_WorldToString()
+        {
+            string s = "[";
+            foreach (var chunk in OverworldGeneration.instance.chunks)
+            {
+                s += chunk.A_D_ChunkToString();
+            }
+            s = s.Remove(s.LastIndexOf(","), 1);
+            s += "]";
+
+            return s;
+        }
+        public static string A_D_ChunkToString(this Chunk chunk)
+        {
+            string s = "{";
+            GameObject chunkGO = chunk.thisObject;
+            s += $"\"x\":{chunk.x}," +
+                 $"\"y\":{chunk.y}," +
+                 $"\"biome\":\"{chunk.biome.ToString()}\"," +
+                 $"\"enviroment\":[" +
+                 $"{chunkGO.transform.A_D_EnviromentOfChunkToString()}";
+
+            s += "]},";
+            return s;
+        }
+
+        public static string A_D_EnviromentOfChunkToString(this Transform chunk)
+        {
+            string s = "";
+            if(chunk.Find("Enviroment").childCount == 0)
+                return s;
+            foreach (Transform Envo in chunk.Find("Enviroment"))
+            {
+                string name = Envo.name.Replace("(Clone)","");
+                float x = Envo.position.x;
+                float y = Envo.position.y;
+
+                s += $"{{" +
+                    $"\"name\":\"{name}\"," +
+                    $"\"x\":{x}," +
+                    $"\"y\":{y}" +
+                    $"}},";
+            }
+
+
+            s = s.Remove(s.LastIndexOf(","), 1);
+            return s;
+        }
+
     }
 }

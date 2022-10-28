@@ -15,8 +15,8 @@ TagManager:
   - IgnoreCameraObject
   - IgnoreCameraUI
   - IgnoreRaycastUI
-  - 
-  - 
+  - NoEnvoSpawnVillage
+  - NoEnvoSpawnHouse
   - 
   - 
   - 
