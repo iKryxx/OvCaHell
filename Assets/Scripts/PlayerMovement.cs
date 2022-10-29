@@ -7,7 +7,7 @@ public class PlayerMovement : MonoBehaviour
 {
     [HideInInspector] public Rigidbody2D rb;
     [HideInInspector] public Vector2 input;
-    [HideInInspector] public float speed;
+    public float speed;
 
     [HideInInspector] float m = 1;
     [HideInInspector] private float CurrentSpeed;
@@ -44,7 +44,7 @@ public class PlayerMovement : MonoBehaviour
             AnimationManager.instance.stopWalkingAnimation();
         if (holdingItem.activeSelf)
         {
-            shouldBeFlipped = !(270 < holdingItem.transform.parent.parent.eulerAngles.z || holdingItem.transform.parent.parent.eulerAngles.z < 90);
+            shouldBeFlipped = !(270 < holdingItem.transform.parent.eulerAngles.z || holdingItem.transform.parent.eulerAngles.z < 90);
             if(!shouldBeFlipped)
                 holdingItem.transform.localRotation = Quaternion.Euler(180, 0, -45);
             else

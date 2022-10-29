@@ -9,13 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5a0b859ec5dd2fa41b70270d924629af, type: 3}
+  m_Script: {fileID: 11500000, guid: ac622c84ec97e8d46acdd9ee126c1fd3, type: 3}
   m_Name: Large Backpack
   m_EditorClassIdentifier: 
-  Icon: {fileID: 2800000, guid: 760c2f0ed55778b4db30843e798123b6, type: 3}
+  Icon: {fileID: 2800000, guid: be97506242092d042a3bbe0ec48f473a, type: 3}
   type: 3
-  description: Holds 9 additional Slots
+  description: 
   maxStack: 1
   Inventory: {fileID: 0}
-  size: 9
+  size: 6
   id: 0

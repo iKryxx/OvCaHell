@@ -10,13 +10,13 @@ public class RecipeManager : MonoBehaviour
     public List<Recipe> recipes = new List<Recipe>();
     public List<Recipe> CTrecipes = new List<Recipe>();
 
-    [HideInInspector] public GameObject Prefab;
-    [HideInInspector] public GameObject ReqPrefab;
+    /*[HideInInspector]*/ public GameObject Prefab;
+    /*[HideInInspector]*/ public GameObject ReqPrefab;
 
     public List<RecipeObject> recipeObjects = new List<RecipeObject>();
 
     public bool shouldDisplay;
-    [HideInInspector] public GameObject RecipeParent;
+    /*[HideInInspector]*/ public GameObject RecipeParent;
 
     private void Update()
     {

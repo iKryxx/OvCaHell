@@ -7,15 +7,15 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5a0b859ec5dd2fa41b70270d924629af, type: 3}
+  m_Script: {fileID: 11500000, guid: ac622c84ec97e8d46acdd9ee126c1fd3, type: 3}
   m_Name: Small Backpack
   m_EditorClassIdentifier: 
-  Icon: {fileID: 2800000, guid: 408ead1a659b6a946a0c00c0c137a719, type: 3}
+  Icon: {fileID: 2800000, guid: d0c1d26a4d03e8442b8565ca2969ad0d, type: 3}
   type: 3
-  description: Holds 3 additional Slots
+  description: 
   maxStack: 1
   Inventory: {fileID: 0}
-  size: 3
-  id: 1
+  size: 2
+  id: 0

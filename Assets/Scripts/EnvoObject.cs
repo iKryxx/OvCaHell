@@ -75,6 +75,7 @@ public class EnvoObject : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D collision)
     {
+        Debug.Log(collision.gameObject.name);
         ToolObject currentItem = null;
         if (InventoryManager.instance.currentItem != null)
         {

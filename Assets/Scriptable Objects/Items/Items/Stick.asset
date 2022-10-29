@@ -9,10 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 73ab5be85b1ff854ea7a50a147d3b595, type: 3}
+  m_Script: {fileID: 11500000, guid: 8e24a2146eb69214aacbdde57dfdb205, type: 3}
   m_Name: Stick
   m_EditorClassIdentifier: 
-  Icon: {fileID: 2800000, guid: e90bc7beee005c242810cf1568968526, type: 3}
+  Icon: {fileID: 2800000, guid: d9ac27f0fa3680a4484b104e42428bef, type: 3}
   type: 4
-  description: Crafted From Planks
+  description: 
   maxStack: 50

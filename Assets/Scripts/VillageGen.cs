@@ -35,8 +35,6 @@ public class VillageGen : MonoBehaviour
 
     public List<House> Houses = new List<House>();
 
-
-    int test = 0;
     void Update()
     {
         

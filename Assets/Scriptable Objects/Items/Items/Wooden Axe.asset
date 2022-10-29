@@ -9,12 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 37b1d5365f86b5344b3b1d88a124544d, type: 3}
+  m_Script: {fileID: 11500000, guid: 50d5fe45c28dbfb468cd57ab4fb495a7, type: 3}
   m_Name: Wooden Axe
   m_EditorClassIdentifier: 
-  Icon: {fileID: 2800000, guid: 9926c5ba9440bc047992bd215b193938, type: 3}
+  Icon: {fileID: 2800000, guid: 2840c44cfec53014ab08d8103bee2c7c, type: 3}
   type: 2
   description: 
   maxStack: 1
   toolType: 0
-  toolStrength: 10
+  toolStrength: 1

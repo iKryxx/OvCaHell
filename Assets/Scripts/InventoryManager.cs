@@ -98,7 +98,7 @@ public class InventoryManager : MonoBehaviour
     {
         Vector3 dir = Input.mousePosition - Camera.main.WorldToScreenPoint(transform.position);
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        holdingItem.transform.parent.parent.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        holdingItem.transform.parent.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
         ItemObject item = inventory.getCurrentItem();
         if (item == null)
         {

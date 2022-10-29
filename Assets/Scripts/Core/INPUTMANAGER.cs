@@ -115,16 +115,14 @@ public class INPUTMANAGER : MonoBehaviour
 
     void OnAttack()
     {
+        Debug.Log("POOF");
         ItemObject obj = A_D_getCurrentItem();
-
-        if (!AnimationManager.instance.anim.isPlaying || obj.GetType() != tool)
-            playerMovement.triggerInput = true;
-        if (obj == null)
+        if (obj == null || AnimationManager.instance == null)
             return;
+        if (AnimationManager.instance != null && !AnimationManager.instance.anim.isPlaying || obj.GetType() != tool)
+            playerMovement.triggerInput = true; 
         if (obj.GetType() == tool)
-        {
             AnimationManager.instance.tryPlayAnim();
-        }
     }
     void OnDrop()
     {

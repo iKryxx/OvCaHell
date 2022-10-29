@@ -9,10 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 73ab5be85b1ff854ea7a50a147d3b595, type: 3}
+  m_Script: {fileID: 11500000, guid: 8e24a2146eb69214aacbdde57dfdb205, type: 3}
   m_Name: Wood
   m_EditorClassIdentifier: 
-  Icon: {fileID: 2800000, guid: 73a02b80597122e4f851216c4ef65eb4, type: 3}
-  type: 3
-  description: Used for crafting, building and to warm yourself on cold nights, BRRR!
+  Icon: {fileID: 2800000, guid: 92b6dfb7a25cced4fa25c70bd3858a23, type: 3}
+  type: 4
+  description: 
   maxStack: 50
