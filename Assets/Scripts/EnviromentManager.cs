@@ -27,10 +27,10 @@ public class EnviromentManager : MonoBehaviour
         item = new Item(Items.returnItemByName("Wooden Axe"), 1, new Vector2(33, 0));
 
 
-        GameObject nin = Instantiate(enviromentObjects[0].prefab,new Vector3(20,20,0),Quaternion.identity);
-        nin.GetComponentInChildren<EnvoObject>().setValues(enviromentObjects[0].prefab, enviromentObjects[0].type, enviromentObjects[0].mineable, enviromentObjects[0].bestTool, enviromentObjects[0].HP, enviromentObjects[0].mineableWithFist);
-        nin.GetComponentInChildren<EnvoObject>().setDrops(enviromentObjects[0].drops);
-        nin.transform.parent = ChunkInfo.ToChunk(ChunkInfo.ToChunkCoords(new Vector2(20, 20))).thisObject.transform.Find("Enviroment"); 
+        //GameObject nin = Instantiate(enviromentObjects[0].prefab,new Vector3(20,20,0),Quaternion.identity);
+        //nin.GetComponentInChildren<EnvoObject>().setValues(enviromentObjects[0].prefab, enviromentObjects[0].type, enviromentObjects[0].mineable, enviromentObjects[0].bestTool, enviromentObjects[0].HP, enviromentObjects[0].mineableWithFist);
+        //nin.GetComponentInChildren<EnvoObject>().setDrops(enviromentObjects[0].drops);
+        //nin.transform.parent = ChunkInfo.ToChunk(ChunkInfo.ToChunkCoords(new Vector2(20, 20))).thisObject.transform.Find("Enviroment"); 
     }
     public void DropItem(Slot slot)
     {
@@ -86,7 +86,7 @@ public class EnviromentManager : MonoBehaviour
         else if (i == 1)
         {
             i++;
-            AddStart();
+            //AddStart();
         }
     }
 }

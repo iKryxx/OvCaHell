@@ -6,13 +6,14 @@ public class OverworldGeneration : MonoBehaviour
 {
     public static OverworldGeneration instance;
     public EnviromentManager envo;
+    public SaveLoadmanager SaveLoad;
 
     public LayerMask forbiddenVillage;
     public LayerMask forbiddenHouse;
 
 
     //WorldSettings
-    public int seed;
+    public World currWorld;
     public int BiomeSize;
     bool LockWorldSize = true;
     public int ChunkSize = 20;
@@ -42,21 +43,27 @@ public class OverworldGeneration : MonoBehaviour
 
     private void Awake()
     {
+
         instance = this;
+        
         villageFilter.SetLayerMask(forbiddenVillage);
         houseFilter.SetLayerMask(forbiddenHouse);
     }
     void Start()
     {
-        if(LockWorldSize) {
-            Chunk _chunk = new Chunk(0,0, biome.Plains);
-            chunks.Add(_chunk);
-            _chunk = new Chunk(1,0, biome.Plains);
-            chunks.Add(_chunk);
-        }
+        if (crossSceneVariables.World != "")
+            currWorld = crossSceneVariables.World.stringToWorld();
+        else
+            currWorld = "Debug".stringToWorld();
+        if (PlayerPrefs.HasKey(currWorld.getSavePrefix() + "World"))
+            SaveLoad.loadWorld(currWorld);
+
+
     }
     void Update()
     {
+
+
         //setting current chunk
         Vector2 pos = player.transform.position;
         Vector2Int curr = pos.ToChunkCoords();
@@ -89,12 +96,15 @@ public class OverworldGeneration : MonoBehaviour
 
         _currentChunk = currentChunk;
 
+        if (Input.GetKeyDown(KeyCode.Escape))
+            SaveLoad.SaveWorld(currWorld);
+
         //Generating Villages, one per frame
     }
 
     private void GenerateVillage(Vector2Int pos)
     {
-        if (Mathf.PerlinNoise(pos.x * frequency + seed, pos.y * frequency + seed) < threshhold)
+        if (Mathf.PerlinNoise(pos.x * frequency + currWorld.Seed, pos.y * frequency + currWorld.Seed) < threshhold)
             VillageGen.instance.VillageGeneration(new Vector2Int(pos.x, pos.y));
     }
 
@@ -140,9 +150,15 @@ public class OverworldGeneration : MonoBehaviour
             curr.isStatic = true;
 
             chunk.thisObject = Parent;
+
+            Debug.Log(chunk.isChunkLoadedFromFile);
+
+
             foreach (var ENV in chunk.toBiome().enviroment)
             {
 
+                if (chunk.isChunkLoadedFromFile)
+                    break;
                 if (Random.Range(0, 100) > ENV.chance)
                     continue;
 
@@ -213,6 +229,7 @@ public class OverworldGeneration : MonoBehaviour
     public biome biome = biome.Null;
     public bool generated = false;
     public bool hasEntered = false;
+    public bool isChunkLoadedFromFile = false;
     public GameObject thisObject;
     public Chunk(int x, int y, biome type){
         this.x = x;
@@ -338,7 +355,7 @@ public static class GetPerlinNoiseBiome
     public static biome GenerateBiomeAt(Vector2 pos)
     {
         //using seed
-        pos = pos + new Vector2(pos.x + OverworldGeneration.instance.seed * 100, pos.y + OverworldGeneration.instance.seed * 100);
+        pos = pos + new Vector2(pos.x + OverworldGeneration.instance.currWorld.Seed * 100, pos.y + OverworldGeneration.instance.currWorld.Seed * 100);
         float perlin = Mathf.PerlinNoise(pos.x / OverworldGeneration.instance.BiomeSize + .1f, pos.y / OverworldGeneration.instance.BiomeSize + .1f);
         biome bi = biome.Null;
         if (perlin < 0.2f)

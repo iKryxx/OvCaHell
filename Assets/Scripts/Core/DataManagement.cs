@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -100,6 +101,10 @@ namespace DataManager
         public static ItemObject A_D_stringToItem(string str)
         {
             return Items.returnItemByName(str);
+        }
+        public static biome toBiome(this string str)
+        {
+            return (biome)Enum.Parse(typeof(biome), str);
         }
 
         public static string A_D_BackpacksToString()
