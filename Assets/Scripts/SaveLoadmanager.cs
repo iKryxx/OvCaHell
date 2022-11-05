@@ -5,26 +5,27 @@ using UnityEngine;
 
 using System.Threading;
 using static DataManager.DataManagement;
+using System.Linq;
 
 public class SaveLoadmanager : MonoBehaviour
 {
     public string SaveString;
 
     [ContextMenu("SaveBP")]
-    void SaveBackPacks()
+    void SaveBackPacks(World world)
     {
         SaveString = A_D_BackpacksToString();
-        PlayerPrefs.SetString("BackPacks",SaveString);
+        PlayerPrefs.SetString(world.getSavePrefix() + "BackPacks",SaveString);
     }
 
     [ContextMenu("LoadBP")]
-    void LoadBackPacks()
+    void LoadBackPacks(World world)
     {
 
 
         int Amount = 0;
         int index = 0;
-        SaveString = PlayerPrefs.GetString("BackPacks","");
+        SaveString = PlayerPrefs.GetString(world.getSavePrefix() + "BackPacks","");
         if (SaveString == "" || SaveString == "{}")
             return;
         JArray a = JArray.Parse(SaveString);
@@ -66,24 +67,26 @@ public class SaveLoadmanager : MonoBehaviour
 
     }
     [ContextMenu("SaveINV")]
-    void SaveInventory()
+    void SaveInventory(World world)
     {
         SaveString = A_D_InventoryToString();
-        PlayerPrefs.SetString("Inventory", SaveString);
+        PlayerPrefs.SetString(world.getSavePrefix() + "Inventory", SaveString);
     }
     [ContextMenu("LoadINV")]
-    void LoadInventory()
+    void LoadInventory(World world)
     {
-        SaveString = PlayerPrefs.GetString("Inventory", "");
+        InventoryManager.instance.inventory.Container.Clear();
+        SaveString = PlayerPrefs.GetString(world.getSavePrefix() + "Inventory", "");
         if (SaveString == "")
             return;
         int Amount = 0;
         int index = 0;
         JArray a = JArray.Parse(SaveString);
-        Debug.Log(SaveString);
 
         foreach (JObject Item in a)
         {
+            if (A_D_stringToItem(Item["Item"].ToString().Replace("(Clone)", "")) == null)
+                continue;
             switch (A_D_stringToItem(Item["Item"].ToString().Replace("(Clone)","")).type)
             {
                 //case ItemType.Tool:
@@ -105,24 +108,28 @@ public class SaveLoadmanager : MonoBehaviour
             }
         }
 
-        LoadBackPacks();
+        LoadBackPacks(world);
     }
 
     [ContextMenu("Save World")]
     public void SaveWorld(World world)
     {
+       tryAddWorldToList(world);
+
+
         SaveString = A_D_WorldToString();
         PlayerPrefs.SetString(world.getSavePrefix()+"World", SaveString);
-        Debug.Log(SaveString);
+        SaveString = A_D_PlayerPosToString();
+        PlayerPrefs.SetString(world.getSavePrefix() + "Player", SaveString);
     }
-    public void loadWorld(World world)
+    public IEnumerator loadWorld(World world)
     {
+
         SaveString = PlayerPrefs.GetString(world.getSavePrefix() + "World");
 
         JArray JA = JArray.Parse(SaveString);
         foreach (JObject cData in JA)
         {
-            Debug.Log(cData.ToString());
             Chunk chunk = new Chunk((int)cData["x"], (int)cData["y"], cData["biome"].ToString().toBiome());
             OverworldGeneration.instance.chunks.Add(chunk);
             chunk.isChunkLoadedFromFile = true;
@@ -148,7 +155,6 @@ public class SaveLoadmanager : MonoBehaviour
 
 
                 GameObject nin = Instantiate(obj.prefab, new Vector3(x, y, 0), Quaternion.identity);
-                Debug.Log(envo.ToString(), nin);
                 if (nin.transform.GetComponentInChildren<CircleCollider2D>() != null)
                 {
 
@@ -166,8 +172,7 @@ public class SaveLoadmanager : MonoBehaviour
                     else
                         Destroy(nin.GetComponent<CircleCollider2D>());
                 }
-
-
+                OverworldGeneration.instance.RefreshChunks();
                 nin.transform.parent = chunk.thisObject.transform.Find("Enviroment");
                 if (obj.mineable)
                 {
@@ -179,6 +184,36 @@ public class SaveLoadmanager : MonoBehaviour
 
             }
         }
+        SaveString = PlayerPrefs.GetString(world.getSavePrefix() + "Player");
+        if(SaveString == "")
+            yield return null;
+        JObject JO = JObject.Parse(SaveString);
+
+        float px = (float)JO["x"]/10;
+        float py = (float)JO["y"]/10;
+        GameObject.FindGameObjectWithTag("Player").transform.position =new Vector3(px, py, 0);
+        yield return null;
+    }
+
+    void tryAddWorldToList(World world)
+    {
+        if (!PlayerPrefs.HasKey("Worlds"))
+        {
+            PlayerPrefs.SetString("Worlds",world.Name);
+            return;
+        }
+
+        SaveString = PlayerPrefs.GetString("Worlds");
+        string[] list = SaveString.Split(' ');
+
+
+        for (int i = 0; i < list.Length; i++)
+        {
+            if (list[i] == world.Name)
+                return;
+        }
+        SaveString += " " + world.Name;
+        PlayerPrefs.SetString("Worlds", SaveString);
     }
 
 
@@ -188,13 +223,13 @@ public class SaveLoadmanager : MonoBehaviour
         while (true)
         {
             yield return new WaitForSeconds(1);
-            SaveInventory();
-            SaveBackPacks();
+            SaveInventory(OverworldGeneration.instance.currWorld);
+            SaveBackPacks(OverworldGeneration.instance.currWorld);
         }
     }
-    private void Awake()
+    public void start()
     {
-        LoadInventory();
+        LoadInventory(OverworldGeneration.instance.currWorld);
         StartCoroutine(AutoSave());
     }
 

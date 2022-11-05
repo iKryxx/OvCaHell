@@ -102,16 +102,16 @@ public class InventoryManager : MonoBehaviour
         ItemObject item = inventory.getCurrentItem();
         if (item == null)
         {
-            holdingItem.SetActive(false); return;
+            holdingItem.GetComponent<SpriteRenderer>().color = new Color(255,255,255,0); return;
         }
         ItemType type = item.type;
         if (type != ItemType.Tool && type != ItemType.Equipment)
         {
-            holdingItem.SetActive(false); return;
+            holdingItem.GetComponent<SpriteRenderer>().color = new Color(255, 255, 255, 0); return;
         }
 
         holdingItem.GetComponent<SpriteRenderer>().sprite = Sprite.Create(item.Icon, new Rect(new Vector2(0, 0), new Vector2(16, 16)), new Vector2(.5f, .5f), 15f);
-        holdingItem.SetActive(true);
+        holdingItem.GetComponent<SpriteRenderer>().color = new Color(255, 255, 255, 255);
 
     }
 

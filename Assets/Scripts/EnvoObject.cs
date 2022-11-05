@@ -75,7 +75,6 @@ public class EnvoObject : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        Debug.Log(collision.gameObject.name);
         ToolObject currentItem = null;
         if (InventoryManager.instance.currentItem != null)
         {
@@ -89,7 +88,7 @@ public class EnvoObject : MonoBehaviour
         //currentItem = (ToolObject)InventoryManager.instance.currentItem;
 
 
-        
+        Debug.Log(collision.tag != "Holding" || !PlayerMovement.instance.triggerInput || (currentItem == null && !thisObject.mineableWithFist));
 
         if (collision.tag != "Holding" || !PlayerMovement.instance.triggerInput || (currentItem == null && !thisObject.mineableWithFist))
         {

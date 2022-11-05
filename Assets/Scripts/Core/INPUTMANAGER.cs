@@ -34,7 +34,7 @@ public class INPUTMANAGER : MonoBehaviour
         x = 0;
         y = 0;
 
-        string[] all_move = new string[4] {"MoveUp","MoveLeft","MoveDown","MoveRight"};
+        string[] all_move = new string[4] { "MoveUp", "MoveLeft", "MoveDown", "MoveRight" };
         List<int> inputs = new List<int>();
 
 
@@ -66,12 +66,12 @@ public class INPUTMANAGER : MonoBehaviour
     {
         InventoryManager.instance.shift = !InventoryManager.instance.shift;
     }
-    
+
     void OnPickUp()
     {
         InventoryManager.instance.tryPickUp();
     }
-    
+
     void OnInteract()
     {
         ItemObject obj = A_D_getCurrentItem();
@@ -80,9 +80,9 @@ public class INPUTMANAGER : MonoBehaviour
         if (obj.GetType() == backpack && !backpackManager.isUIopen) {
             backpackManager.OpenUI(obj as BackPackObject);
         }
-            
 
-        
+
+
     }
 
     void OnCraft()
@@ -115,14 +115,14 @@ public class INPUTMANAGER : MonoBehaviour
 
     void OnAttack()
     {
-        Debug.Log("POOF");
         ItemObject obj = A_D_getCurrentItem();
-        if (obj == null || AnimationManager.instance == null)
-            return;
-        if (AnimationManager.instance != null && !AnimationManager.instance.anim.isPlaying || obj.GetType() != tool)
-            playerMovement.triggerInput = true; 
-        if (obj.GetType() == tool)
-            AnimationManager.instance.tryPlayAnim();
+        if (obj == null || AnimationManager.instance == null) {
+            playerMovement.triggerInput = true; return;
+        }
+        if (AnimationManager.instance != null && !AnimationManager.instance.anim.isPlaying) { 
+            playerMovement.triggerInput = true; }
+        if (obj.GetType() == tool){
+            AnimationManager.instance.tryPlayAnim();}
     }
     void OnDrop()
     {
@@ -155,7 +155,7 @@ public class INPUTMANAGER : MonoBehaviour
         }
 
 
-        if (tbc == 3)
+        if (tbc == 7)
         {
             playerMovement.triggerInput = false;
             tbc = 0;

@@ -56,8 +56,9 @@ public class OverworldGeneration : MonoBehaviour
         else
             currWorld = "Debug".stringToWorld();
         if (PlayerPrefs.HasKey(currWorld.getSavePrefix() + "World"))
-            SaveLoad.loadWorld(currWorld);
+            StartCoroutine(SaveLoad.loadWorld(currWorld));
 
+        SaveLoad.start();
 
     }
     void Update()
@@ -126,7 +127,7 @@ public class OverworldGeneration : MonoBehaviour
     }
 
     //Render Chunks and Generate Enviroment
-    void RefreshChunks(){
+    public void RefreshChunks(){
         foreach (var chunk in chunks)
         {
             if(chunk.generated)
@@ -151,7 +152,7 @@ public class OverworldGeneration : MonoBehaviour
 
             chunk.thisObject = Parent;
 
-            Debug.Log(chunk.isChunkLoadedFromFile);
+            //Debug.Log(chunk.isChunkLoadedFromFile);
 
 
             foreach (var ENV in chunk.toBiome().enviroment)

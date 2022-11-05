@@ -160,13 +160,21 @@ namespace DataManager
                         $"}},";
                         break;
                     default:
-                        str +=
+                        try
+                        {
+                            str +=
                         $"{{" +
                         $"\"Item\":\"{Slot.item.name}\"," +
                         $"\"Amount\":{Slot.amount}," +
                         $"\"Index\":{Slot.index}" +
                         $"}},";
-                        break;
+                            break;
+                        }
+                        catch (Exception)
+                        {
+                            InventoryManager.instance.inventory.Container.Clear();
+                            throw;
+                        }
                 }
 
 
@@ -220,6 +228,10 @@ namespace DataManager
             s += "]";
 
             return s;
+        }
+        public static string A_D_PlayerPosToString()
+        {
+            return $"{{\"x\":\"{Mathf.RoundToInt(GameObject.FindGameObjectWithTag("Player").transform.position.x*10)}\",\"y\":\"{Mathf.RoundToInt(GameObject.FindGameObjectWithTag("Player").transform.position.y*10)}\"}}";
         }
         public static string A_D_ChunkToString(this Chunk chunk)
         {
