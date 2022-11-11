@@ -34,20 +34,20 @@ public class EnviromentManager : MonoBehaviour
     }
     public void DropItem(Slot slot)
     {
-        Item closest = GetClosestItem(Physics2D.BoxCastAll(player.transform.position, new Vector2(5.0f, 5.0f), 45, new Vector2()), player.transform, slot.item.name);
+        Item closest = GetClosestItem(Physics2D.BoxCastAll(player.transform.position, new Vector2(20.0f, 20.0f), 45, new Vector2()), player.transform, slot.item.name);
         if(closest != null)
         {
             closest.amount += 1;
         }
         else
-            new Item(slot.item, 1, player.transform.position + new Vector3(Random.Range(-2.4f,2.4f), Random.Range(-2.4f, 2.4f)));
+            new Item(slot.item, 1, player.transform.position + new Vector3(Random.Range(-19.4f,19.4f), Random.Range(-19.4f, 19.4f)));
 
         slot.amount -= 1;
     }
     public void DropAll(Slot slot)
     {        
         
-        new Item(slot.item, slot.amount, player.transform.position + new Vector3(Random.Range(-2.4f, 2.4f), Random.Range(-2.4f, 2.4f)));
+        new Item(slot.item, slot.amount, player.transform.position + new Vector3(Random.Range(-19.4f, 19.4f), Random.Range(-19.4f, 19.4f)));
 
         slot.amount = 0;
     }

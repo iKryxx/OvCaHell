@@ -7,8 +7,6 @@ public class VillageGen : MonoBehaviour
     /*
      * Todo:
      * Entering Houses:
-     *  - implement World Saving (OOF)
-     *      -> Proper Start Screen (Load World, New World, Delete World, Quit, Options)
      *  - Enter House => Save World, Load House, Load new Scene based on Loaded House
      *  - Leave House => Save House, Load World
      * 
@@ -80,8 +78,8 @@ public class VillageGen : MonoBehaviour
         VillageCoords currentCoord;
         currentCoord = new VillageCoords((int)currPos.coords.x, (int)currPos.coords.y, villageEnvos[0]);
         vill.coords.Add(currentCoord);
-        if (currPos.coords.ToChunkCoords().ToChunk() == null)
-            OverworldGeneration.instance.chunks.Add(new Chunk(currPos.coords.ToChunkCoords().x, currPos.coords.ToChunkCoords().y, GetPerlinNoiseBiome.GenerateBiomeAt(currPos.coords.ToChunkCoords())));
+//        if (currPos.coords.ToChunkCoords().ToChunk() == null)
+//            new Chunk(currPos.coords.ToChunkCoords().x, currPos.coords.ToChunkCoords().y, GetPerlinNoiseBiome.GenerateBiomeAt(currPos.coords.ToChunkCoords()));
         Villages.Add(vill);
 
         //Procedurally Generating Village via Loop
@@ -98,8 +96,8 @@ public class VillageGen : MonoBehaviour
                 {
                     currentCoord = vill.coords[Random.Range(0, vill.coords.Count)];
                     currPos.coords = new Vector2(currentCoord.x, currentCoord.y);
-                    if (currPos.coords.ToChunkCoords().ToChunk() == null)
-                        OverworldGeneration.instance.chunks.Add(new Chunk(currPos.coords.ToChunkCoords().x, currPos.coords.ToChunkCoords().y, GetPerlinNoiseBiome.GenerateBiomeAt(currPos.coords.ToChunkCoords())));
+//                    if (currPos.coords.ToChunkCoords().ToChunk() == null)
+//                        new Chunk(currPos.coords.ToChunkCoords().x, currPos.coords.ToChunkCoords().y, GetPerlinNoiseBiome.GenerateBiomeAt(currPos.coords.ToChunkCoords()));
                 }
                 else
                     break;
@@ -114,7 +112,7 @@ public class VillageGen : MonoBehaviour
                 vill.coords.Add(currentCoord);
 
                 if (currPos.coords.ToChunkCoords().ToChunk() == null)
-                    OverworldGeneration.instance.chunks.Add(new Chunk(currPos.coords.ToChunkCoords().x, currPos.coords.ToChunkCoords().y, GetPerlinNoiseBiome.GenerateBiomeAt(currPos.coords.ToChunkCoords())));
+                    new Chunk(currPos.coords.ToChunkCoords().x, currPos.coords.ToChunkCoords().y, biome.Null);
             }
             //Split Generation
             else
@@ -128,8 +126,8 @@ public class VillageGen : MonoBehaviour
                 currentCoord.AddDir(currGen.d);
                 vill.coords.Add(currentCoord);
 
-                if (currPos.coords.ToChunkCoords().ToChunk() == null)
-                    OverworldGeneration.instance.chunks.Add(new Chunk(currPos.coords.ToChunkCoords().x, currPos.coords.ToChunkCoords().y, GetPerlinNoiseBiome.GenerateBiomeAt(currPos.coords.ToChunkCoords())));
+//                if (currPos.coords.ToChunkCoords().ToChunk() == null)
+//                    new Chunk(currPos.coords.ToChunkCoords().x, currPos.coords.ToChunkCoords().y, GetPerlinNoiseBiome.GenerateBiomeAt(currPos.coords.ToChunkCoords()));
 
             }
 
@@ -359,7 +357,7 @@ public class VillageCoords
         CircleCollider2D coll = collider.AddComponent<CircleCollider2D>();
         collider.transform.position = this.MidPoint;
         collider.transform.parent = GameObject.Find($"Village: {this.MidPoint.x} {this.MidPoint.y}").transform;
-        coll.radius = Mathf.Max(this.Bounderies.max.x - this.Bounderies.min.x, this.Bounderies.max.y - this.Bounderies.min.y);
+        coll.radius = Mathf.Max(this.Bounderies.max.x - this.Bounderies.min.x, this.Bounderies.max.y - this.Bounderies.min.y)/1.57f;
         //coll.isTrigger = true;
         collider.layer = LayerMask.NameToLayer("NoEnvoSpawnVillage");
 

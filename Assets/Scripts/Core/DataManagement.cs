@@ -220,9 +220,9 @@ namespace DataManager
         public static string A_D_WorldToString()
         {
             string s = "[";
-            foreach (var chunk in OverworldGeneration.instance.chunks)
+            foreach (var chunk in OverworldGeneration.instance.allChunks)
             {
-                s += chunk.A_D_ChunkToString();
+                s += chunk.Value.A_D_ChunkToString();
             }
             s = s.Remove(s.LastIndexOf(","), 1);
             s += "]";

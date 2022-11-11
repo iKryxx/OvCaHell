@@ -192,7 +192,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 23.99
+  orthographic size: 65
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
@@ -1380,7 +1380,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 1343098103}
   enviromentObjects:
-  - prefab: {fileID: 5326227441235812182, guid: ad2248fe5e5606e40ac85062aa87da6b, type: 3}
+  - prefab: {fileID: 5326227441235812182, guid: 05969ca76eb2a8645a6d33f984e26b6c, type: 3}
     type: 0
     drops:
     - Item: {fileID: 11400000, guid: 23d3d0cb3ee2af74ca510b810135cedb, type: 2}
@@ -1398,7 +1398,26 @@ MonoBehaviour:
     mineable: 1
     mineableWithFist: 1
     bestTool: 0
-    HP: 20
+    HP: 50
+  - prefab: {fileID: 5326227441235812182, guid: dfac79f376cf63948bc8162e7ff4fe8c, type: 3}
+    type: 0
+    drops:
+    - Item: {fileID: 11400000, guid: 23d3d0cb3ee2af74ca510b810135cedb, type: 2}
+      min_Amount: 1
+      max_Amount: 2
+      guaranteed: 1
+      chance: 100
+      Amount: 0
+    - Item: {fileID: 11400000, guid: 23d3d0cb3ee2af74ca510b810135cedb, type: 2}
+      min_Amount: 3
+      max_Amount: 4
+      guaranteed: 0
+      chance: 12
+      Amount: 0
+    mineable: 1
+    mineableWithFist: 1
+    bestTool: 0
+    HP: 50
   - prefab: {fileID: 6586381231916704226, guid: b3c978cff4559d243b917d413c8eda09, type: 3}
     type: 2
     drops: []
@@ -2609,7 +2628,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rb: {fileID: 0}
   input: {x: 0, y: 0}
-  speed: 5
+  speed: 20
   triggerInput: 0
   holdingItem: {fileID: 1851049156}
 --- !u!50 &1343098106
@@ -2649,6 +2668,8 @@ MonoBehaviour:
   inventory: {fileID: 11400000, guid: 321371ee4723dfc4397c8df6588ec6c6, type: 2}
   currentItem: {fileID: 0}
   holdingItem: {fileID: 1851049156}
+  focus: 0
+  _item: {fileID: 0}
   enviromentManager: {fileID: 571395439}
   shift: 0
 --- !u!61 &1343098109
@@ -3729,12 +3750,15 @@ MonoBehaviour:
   forbiddenHouse:
     serializedVersion: 2
     m_Bits: 1024
-  BiomeSize: 100
+  chunksToGenerate: []
+  chunksToInstantiate: []
+  chunksPerFrame: 8
+  BiomeSize: 150
   ChunkSize: 20
   ChunkParent: {fileID: 1401858562}
-  chunks: []
   player: {fileID: 1343098103}
   renderDistance: 12
+  resetWorld: 1
   prefab: {fileID: 6663241992775658138, guid: 787c486ac9dc1f14b839eb915d1067fc, type: 3}
   OverworldBiomes:
     biomes:
@@ -3763,13 +3787,13 @@ MonoBehaviour:
       - {fileID: 2800000, guid: efd5018836351cd4a8d9fd1bef98786e, type: 3}
       enviroment:
       - type: 0
-        chance: 17
+        chance: 0.1
         min_Amount: 1
-        max_Amount: 3
+        max_Amount: 1
       - type: 2
-        chance: 90
-        min_Amount: 4
-        max_Amount: 5
+        chance: 4
+        min_Amount: 1
+        max_Amount: 1
     - NAME: Desert
       name: 3
       sprites:
@@ -3819,9 +3843,9 @@ MonoBehaviour:
       - {fileID: 2800000, guid: e63135d586ac03541afa904f04b96cee, type: 3}
       enviroment:
       - type: 0
-        chance: 75
-        min_Amount: 3
-        max_Amount: 5
+        chance: 18
+        min_Amount: 1
+        max_Amount: 1
   WoodsGroundSprites: []
   DesertGroundSprites: []
   frequency: 0.6
@@ -3880,13 +3904,97 @@ Transform:
   m_GameObject: {fileID: 1778614850}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1851049158}
   m_Father: {fileID: 1124106822}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1843001266
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1843001267}
+  - component: {fileID: 1843001268}
+  m_Layer: 0
+  m_Name: Shadow
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1843001267
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1843001266}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.07333, z: 0}
+  m_LocalScale: {x: 0.109391995, y: 0.05181418, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1343098104}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &1843001268
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1843001266}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.23921569}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
 --- !u!1 &1851049156
 GameObject:
   m_ObjectHideFlags: 0
@@ -3965,7 +4073,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1851049156}
   m_LocalRotation: {x: -0, y: -0, z: 0.38268274, w: 0.9238798}
-  m_LocalPosition: {x: 0.18, y: 0, z: 0}
+  m_LocalPosition: {x: 0.458, y: 0, z: 0}
   m_LocalScale: {x: 0.09844, y: 0.09844, z: 0.09844}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3985,7 +4093,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0.51106894, y: 1.0470275}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -3996,7 +4104,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 2.2958128, y: 2.319811}
   m_EdgeRadius: 0
 --- !u!1001 &1871841036
 PrefabInstance:
@@ -4019,11 +4127,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8356978806675574247, guid: 81f27866007b23643be80f083784ce5f, type: 3}
       propertyPath: m_LocalScale.x
-      value: 15
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 8356978806675574247, guid: 81f27866007b23643be80f083784ce5f, type: 3}
       propertyPath: m_LocalScale.y
-      value: 15
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 8356978806675574247, guid: 81f27866007b23643be80f083784ce5f, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4112,7 +4220,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chunkSize: 20
-  tileSize: 15
+  tileSize: 60
   minSize: 12
   maxSize: 23
   Path: {fileID: 0}

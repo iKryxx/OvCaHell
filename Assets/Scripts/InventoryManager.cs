@@ -14,13 +14,13 @@ public class InventoryManager : MonoBehaviour
 
     public ItemObject currentItem;
     public GameObject holdingItem;
-    bool focus = false;
-    Item _item = null;
+    public bool focus = false;
+    public Item _item = null;
     int _i = 0;
     public EnviromentManager enviromentManager;
-    void OnTriggerStay2D(Collider2D other)
+    void ItemCollect()
     {
-        if (focus)
+        /*if (focus)
             return;
         if (_i != 1)
         {
@@ -34,7 +34,8 @@ public class InventoryManager : MonoBehaviour
             _item = item;
             other.gameObject.transform.Find("Canvas").gameObject.SetActive(true);
 
-        }
+        }*/
+        return;
     }
     private void OnTriggerExit2D(Collider2D other)
     {
@@ -61,7 +62,7 @@ public class InventoryManager : MonoBehaviour
         else
             currentItemText.gameObject.SetActive(false);
 
-
+        ItemCollect();
         showTool();
         Slot temp = null;
         foreach (var slot in inventory.Container)
@@ -110,7 +111,7 @@ public class InventoryManager : MonoBehaviour
             holdingItem.GetComponent<SpriteRenderer>().color = new Color(255, 255, 255, 0); return;
         }
 
-        holdingItem.GetComponent<SpriteRenderer>().sprite = Sprite.Create(item.Icon, new Rect(new Vector2(0, 0), new Vector2(16, 16)), new Vector2(.5f, .5f), 15f);
+        holdingItem.GetComponent<SpriteRenderer>().sprite = Sprite.Create(item.Icon, new Rect(new Vector2(0, 0), new Vector2(66, 66)), new Vector2(.5f, .5f), 15f);
         holdingItem.GetComponent<SpriteRenderer>().color = new Color(255, 255, 255, 255);
 
     }

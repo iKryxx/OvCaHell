@@ -131,7 +131,6 @@ public class SaveLoadmanager : MonoBehaviour
         foreach (JObject cData in JA)
         {
             Chunk chunk = new Chunk((int)cData["x"], (int)cData["y"], cData["biome"].ToString().toBiome());
-            OverworldGeneration.instance.chunks.Add(chunk);
             chunk.isChunkLoadedFromFile = true;
             
             

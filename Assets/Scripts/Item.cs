@@ -18,8 +18,8 @@ public class Item : MonoBehaviour
 
         Vector2Int pos = position.ToChunkCoords();
         Chunk chunk = position.ToChunkCoords().ToChunk();
-        if (chunk == null)
-            OverworldGeneration.instance.chunks.Add(new Chunk(pos.x, pos.y, GetPerlinNoiseBiome.GenerateBiomeAt(new Vector2(pos.x, pos.y))));
+        if (chunk == null && !OverworldGeneration.instance.chunksToGenerate.HasChunk(chunk))
+            new Chunk(pos.x, pos.y, biome.Null);
 
 
         //GameObject curr = Instantiate(SettingsManager.instance.settings.ItemObjectPrefab, new Vector3(position.x,position.y,0), Random.rotation,GameObject.Find("GroundItems").transform);
@@ -31,8 +31,8 @@ public class Item : MonoBehaviour
         i.nameTMP = curr.transform.Find("Canvas").Find("Name").GetComponent<TextMeshProUGUI>();
         curr.transform.Find("Canvas").transform.rotation = new Quaternion(0,0,0,-curr.transform.rotation.z);
 
-        curr.GetComponent<SpriteRenderer>().sprite = Sprite.Create(item.Icon,new Rect(new Vector2(0,0),new Vector2(16,16)),new Vector2(.5f,.5f),100f);
-        curr.transform.localScale = Vector3.one * 5;
+        curr.GetComponent<SpriteRenderer>().sprite = Sprite.Create(item.Icon,new Rect(new Vector2(0,0),new Vector2(66,66)),new Vector2(.5f,.5f),100f);
+        curr.transform.localScale = Vector3.one * 6.6f;
         //curr.GetComponent<SpriteRenderer>().material.mainTexture = item.Icon;
     }
     private void Update()

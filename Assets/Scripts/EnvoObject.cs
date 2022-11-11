@@ -5,10 +5,13 @@ using UnityEngine.UI;
 
 public class EnvoObject : MonoBehaviour
 {
+    private bool shouldShake = false;
+    private Vector3 startingpos;
     public EnviromentObject thisObject;
     public Transform GuiParent;
     float originalHP;
     float size;
+    float _HP;
 
     public void setValues(GameObject prefab, EnviromentType type, bool mineable, ToolType bestTool, float hP, bool mineableWithFist)
     {
@@ -21,6 +24,8 @@ public class EnvoObject : MonoBehaviour
 
         originalHP = hP;
         size = transform.localScale.x;
+        _HP = hP;
+        startingpos = thisObject.prefab.transform.position;
     }
     public void setDrops(List<Drop> drops)
     {
@@ -48,12 +53,22 @@ public class EnvoObject : MonoBehaviour
 
     private void Update()
     {
+        if (_HP != thisObject.HP)
+        {
+            StartCoroutine("Shake");
+            _HP = thisObject.HP;
+        }
+        if (shouldShake)
+        {
+            thisObject.prefab.transform.position = startingpos + new Vector3(Mathf.Sin(Time.time * 1.0f) * 1.0f, Mathf.Sin(Time.time * 40.0f) * .25f, 0);
+        }
+
         if(thisObject.HP <= 0)
         {
             
             foreach (var drop in thisObject.drops)
             {
-                float size = transform.GetComponent<CircleCollider2D>().radius;
+                float size = 20;
 
                 Vector2 rpoc = transform.position + new Vector3(Random.Range(-size, size), Random.Range(-size, size), 0);
 
@@ -64,6 +79,15 @@ public class EnvoObject : MonoBehaviour
             
         }
     }
+
+    private IEnumerator Shake()
+    {
+        shouldShake = true;
+        yield return new WaitForSeconds(0.2f);
+        shouldShake = false;
+        thisObject.prefab.transform.position = startingpos;
+    }
+
     public static Vector3 RandomPointOnUnitCircle(float radius)
     {
         float angle = Random.Range(0f, Mathf.PI * 2);
@@ -100,15 +124,15 @@ public class EnvoObject : MonoBehaviour
         if (currentItem == null)
         {
             thisObject.HP -= 1;
-            float newSize = Mathf.Lerp(size / 2, size, size * (thisObject.HP / originalHP));
-            transform.localScale = new Vector3(newSize, newSize, 1);
+            //float newSize = Mathf.Lerp(size / 2, size, size * (thisObject.HP / originalHP));
+            //transform.localScale = new Vector3(newSize, newSize, 1);
             PlayerMovement.instance.triggerInput = false;
         }
         else if (thisObject.bestTool == currentItem.toolType && AnimationManager.instance.anim.isPlaying)
         {
             thisObject.HP -= currentItem.toolStrength;
-            float newSize = Mathf.Lerp(size / 2, size, size * (thisObject.HP / originalHP));
-            transform.localScale = new Vector3(newSize, newSize, 1);
+            //float newSize = Mathf.Lerp(size / 2, size, size * (thisObject.HP / originalHP));
+            //transform.localScale = new Vector3(newSize, newSize, 1);
             PlayerMovement.instance.triggerInput = false;
         }
     }
