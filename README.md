@@ -19,6 +19,9 @@ An Indie-Game about farming, exploring and building!
 - F - Pick Up
 - (shift +) Q - Drop (all)
 - T - open command prompt
+- C - open crafting Interface
+- ESC - Save
+- Mousewheel / NUM Keys: Inventory Slot Selection
 
 
 #### What Commands are available in-Game?
