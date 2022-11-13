@@ -42,7 +42,6 @@ public class InventoryManager : MonoBehaviour
         var item = other.GetComponent<Item>();
         if (item)
         {
-            other.gameObject.transform.Find("Canvas").gameObject.SetActive(false);
             focus = false;
             _item = null;
         }

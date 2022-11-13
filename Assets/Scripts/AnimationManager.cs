@@ -75,8 +75,7 @@ public class AnimationManager : MonoBehaviour
             default:
                 break;
         }
-        if (anim.GetClip(_name) == null) {
-            Debug.Log("No such Anims"); return;}
+        if (anim.GetClip(_name) == null)  return;
 
         
         anim.Play(_name);

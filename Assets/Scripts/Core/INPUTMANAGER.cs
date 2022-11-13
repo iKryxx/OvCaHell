@@ -151,7 +151,6 @@ public class INPUTMANAGER : MonoBehaviour
         if (A_D_getCurrentItem() != null && A_D_getCurrentItem().GetType() == backpack)
         {
             BackPackObject obj = A_D_getCurrentItem() as BackPackObject;
-            Debug.Log(obj.id);
         }
 
 

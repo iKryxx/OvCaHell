@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using BasicExtensions;
 
 public class EnvoObject : MonoBehaviour
 {
@@ -72,7 +73,6 @@ public class EnvoObject : MonoBehaviour
 
                 Vector2 rpoc = transform.position + new Vector3(Random.Range(-size, size), Random.Range(-size, size), 0);
 
-                Debug.Log(rpoc);
                 Destroy(transform.parent.gameObject);
                 Item item = new Item(drop.Item, drop.Amount, rpoc);
             }
@@ -112,7 +112,7 @@ public class EnvoObject : MonoBehaviour
         //currentItem = (ToolObject)InventoryManager.instance.currentItem;
 
 
-        Debug.Log(collision.tag != "Holding" || !PlayerMovement.instance.triggerInput || (currentItem == null && !thisObject.mineableWithFist));
+        //Debug.Log(collision.tag != "Holding" || !PlayerMovement.instance.triggerInput || (currentItem == null && !thisObject.mineableWithFist));
 
         if (collision.tag != "Holding" || !PlayerMovement.instance.triggerInput || (currentItem == null && !thisObject.mineableWithFist))
         {
@@ -139,16 +139,15 @@ public class EnvoObject : MonoBehaviour
 
     private void OnMouseOver()
     {
-        GuiParent.gameObject.SetActive(true);
-        GuiParent.Find("HP").GetComponent<Slider>().maxValue = originalHP;
-        GuiParent.Find("HP").GetComponent<Slider>().value = thisObject.HP;
-        GuiParent.Find("HP").Find("Background").GetComponent<Canvas>().overrideSorting = true;
-
-
+        string text = $"{thisObject.prefab.name.toFormat()}\n Attack to damage";
+        
+        Texture2D tex = thisObject.prefab.transform.Find("Image").GetComponent<SpriteRenderer>().sprite.texture;
+        ActionManager.instance.SetAction(tex, text, originalHP, thisObject.HP);
+        
     }
     private void OnMouseExit()
     {
-        GuiParent.gameObject.SetActive(false);
+        ActionManager.instance.ResetAction();
     }
 
 }

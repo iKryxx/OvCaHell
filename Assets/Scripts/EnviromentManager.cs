@@ -5,6 +5,7 @@ using UnityEngine;
 public class EnviromentManager : MonoBehaviour
 {
     public GameObject player;
+    public static EnviromentManager instance;
     public List<EnviromentObject> enviromentObjects = new List<EnviromentObject>();
     int i;
     
@@ -88,6 +89,10 @@ public class EnviromentManager : MonoBehaviour
             i++;
             //AddStart();
         }
+    }
+    private void Awake()
+    {
+        instance = this;
     }
 }
 public enum EnviromentType

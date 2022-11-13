@@ -8,7 +8,6 @@ public class Item : MonoBehaviour
 {
     public ItemObject item;
     public int amount;
-    [HideInInspector] public TextMeshProUGUI nameTMP;
 
 
     public Item(ItemObject item, int amount, Vector2 position)
@@ -23,23 +22,16 @@ public class Item : MonoBehaviour
 
 
         //GameObject curr = Instantiate(SettingsManager.instance.settings.ItemObjectPrefab, new Vector3(position.x,position.y,0), Random.rotation,GameObject.Find("GroundItems").transform);
-        GameObject curr = Instantiate(SettingsManager.instance.settings.ItemObjectPrefab, new Vector3(position.x,position.y,-1), Quaternion.Euler(0,0,Random.Range(0,360)),position.ToChunkCoords().ToChunk().thisObject.transform.Find("GroundItems"));
+        GameObject curr = Instantiate(SettingsManager.instance.settings.ItemObjectPrefab, new Vector3(position.x,position.y, position.y /10000 + 0.1f), Quaternion.Euler(0,0,Random.Range(0,360)),position.ToChunkCoords().ToChunk().thisObject.transform.Find("GroundItems"));
 
         Item i = curr.AddComponent<Item>();
         i.item = this.item;
         i.amount = this.amount;
-        i.nameTMP = curr.transform.Find("Canvas").Find("Name").GetComponent<TextMeshProUGUI>();
-        curr.transform.Find("Canvas").transform.rotation = new Quaternion(0,0,0,-curr.transform.rotation.z);
+
 
         curr.GetComponent<SpriteRenderer>().sprite = Sprite.Create(item.Icon,new Rect(new Vector2(0,0),new Vector2(66,66)),new Vector2(.5f,.5f),100f);
         curr.transform.localScale = Vector3.one * 6.6f;
         //curr.GetComponent<SpriteRenderer>().material.mainTexture = item.Icon;
-    }
-    private void Update()
-    {
-        if(nameTMP != null)
-            nameTMP.text = $"{amount}x {item.name.Replace("(Clone)", "")}\nPress F to pick up";
-
     }
 }
 static class Items

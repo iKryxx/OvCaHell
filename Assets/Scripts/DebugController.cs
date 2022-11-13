@@ -48,7 +48,6 @@ public class DebugController : MonoBehaviour
         if (curLast != 0)
             curLast -= 1;
 
-        Debug.Log("Up");
 
         if (lastInput.Count != 0)
             input = lastInput[curLast];
@@ -59,7 +58,6 @@ public class DebugController : MonoBehaviour
         if (lastInput.Count != 0 && curLast < lastInput.Count - 1)
             curLast += 1;
 
-        Debug.Log("Down");
 
         if (lastInput.Count != 0)
             input = lastInput[curLast];
@@ -136,7 +134,6 @@ public class DebugController : MonoBehaviour
             string[] trueOutput = output.Split("\n");
 
             h = Mathf.Min(Screen.height / 2, trueOutput.Length * 20);
-            Debug.Log(h);
             GUI.Box(new Rect(0, y, Screen.width, h), "", style);
             Rect viewport = new Rect(0, y, Screen.width - 30, 20 * trueOutput.Length);
 

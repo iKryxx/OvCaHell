@@ -147,7 +147,6 @@ public class RecipeObject
     {
         for (int i = 0; i < Recipe.requiredItems.Count; i++)
         {
-            Debug.Log($"{Recipe.requiredItems[i].amount * multiplier}");
             ItemSlots[i].transform.Find("Amount").GetComponent<TextMeshProUGUI>().text = $"{Recipe.requiredItems[i].amount * multiplier}";
             RecipeSlot.transform.Find("Amount").GetComponent<TextMeshProUGUI>().text = $"{Recipe.count * multiplier}";
         }

@@ -184,25 +184,25 @@ public class VillageGen : MonoBehaviour
 
                 if (dir == 0)
                 {
-                    curr.transform.GetChild(0).localScale = new Vector3(1, tileSize + 1f, 1);
-                    curr.transform.position = new Vector3(c.x, c.y, 0);
+                    curr.transform.GetChild(0).localScale = new Vector3(1, tileSize + 4f, 1);
+                    curr.transform.position = new Vector3(c.x, c.y,0);
                 }
                 else if (dir == 1)
                 {
-                    curr.transform.GetChild(0).localScale = new Vector3(1, tileSize + 1f, 1);
-                    curr.transform.position = new Vector3(c.x, c.y, 0);
+                    curr.transform.GetChild(0).localScale = new Vector3(1, tileSize + 4f, 1);
+                    curr.transform.position = new Vector3(c.x, c.y,0);
                     curr.transform.rotation = Quaternion.Euler(0, 0, -90);
                 }
                 else if (dir == 2)
                 {
-                    curr.transform.GetChild(0).localScale = new Vector3(1, tileSize + 1f, 1);
+                    curr.transform.GetChild(0).localScale = new Vector3(1, tileSize + 4f, 1);
                     curr.transform.position = new Vector3(c.x, c.y, 0);
                     curr.transform.rotation = Quaternion.Euler(0, 0, -180);
 
                 }
                 else if (dir == 3)
                 {
-                    curr.transform.GetChild(0).localScale = new Vector3(1, tileSize + 1f, 1);
+                    curr.transform.GetChild(0).localScale = new Vector3(1, tileSize + 4f, 1);
                     curr.transform.position = new Vector3(c.x, c.y, 0);
                     curr.transform.rotation = Quaternion.Euler(0, 0, 90);
 
@@ -219,6 +219,7 @@ public class VillageGen : MonoBehaviour
         {
             GameObject curr = Instantiate(house.obj);
             curr.transform.position = new Vector3(house.pos.x, house.pos.y, 0) + (curr.transform.position - curr.transform.Find("offset").position);
+            Physics2D.IgnoreCollision(curr.GetComponent<Collider2D>(), GameObject.Find("Character").GetComponent<Collider2D>());
         }
     }
 }
@@ -232,8 +233,6 @@ public class VillageGen : MonoBehaviour
 
     public GameObject getObjectOfDir(int dir)
     {
-
-        Debug.Log(dir);
         switch (dir)
         {
             case 0:
@@ -367,11 +366,12 @@ public class VillageCoords
         {
             foreach (var item in results)
             {
-                Debug.Log("this", item.gameObject);
-                GameObject.Destroy(item.gameObject);
+                GameObject.Destroy(item.transform.parent.gameObject);
             }
         }
         Physics2D.IgnoreCollision(coll, GameObject.Find("Character").GetComponent<Collider2D>());
+        Physics2D.IgnoreCollision(coll, GameObject.Find("Character").transform.Find("Player Collider").GetComponent<Collider2D>());
+
     }
 
     internal int getOppositeDir(int dir)

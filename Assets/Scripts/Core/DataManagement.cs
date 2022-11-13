@@ -79,7 +79,6 @@ namespace DataManager
             if (item == null)
                 return null;
 
-            Debug.Log(item.getItemData());
             return item.getItemData();
         }
 
@@ -267,6 +266,36 @@ namespace DataManager
 
 
             s = s.Remove(s.LastIndexOf(","), 1);
+            return s;
+        }
+
+        public static List<Enviroment> A_D_EnviromentOfChunkToEnviroment(this Transform chunk)
+        {
+            List<Enviroment> s = new List<Enviroment>();
+            if (chunk.Find("Enviroment").childCount == 0)
+                return s;
+            foreach (Transform Envo in chunk.Find("Enviroment"))
+            {
+                EnviromentObject env = null;
+                foreach (var envo in EnviromentManager.instance.enviromentObjects)
+                {
+                    if (Envo.name.Replace("(Clone)", "") == envo.prefab.name)
+                        env = envo;
+                }
+
+
+                string name = env.prefab.name;
+                float x = Envo.position.x;
+                float y = Envo.position.y;
+                float HPM = 0;
+                if (Envo.GetComponentInChildren<EnvoObject>() != null && Envo.GetComponentInChildren<EnvoObject>().thisObject != null)
+                {
+                    HPM = Envo.GetComponentInChildren<EnvoObject>().thisObject.HP;
+                    EnviromentType type = Envo.GetComponentInChildren<EnvoObject>().thisObject.type;
+                }
+                env.HP = HPM;
+                s.Add(new Enviroment(x, y, env));
+            }
             return s;
         }
 

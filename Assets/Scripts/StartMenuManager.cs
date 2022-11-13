@@ -155,7 +155,6 @@ public class StartMenuManager : MonoBehaviour
             if(transform.gameObject.name != "Back")
                 Destroy(transform.gameObject);
         }
-        Debug.Log("MEEEEEEEEEEEEEEEEEEEEEEEEEP");
         Worlds = PlayerPrefs.GetString("Worlds").Replace("\u200B","").Split(' ');
         for (int i = 0; i < Worlds.Length; i++)
         {
