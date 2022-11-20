@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -256,6 +257,8 @@ namespace DataManager
                 string name = Envo.name.Replace("(Clone)","");
                 float x = Envo.position.x;
                 float y = Envo.position.y;
+                
+
 
                 s += $"{{" +
                     $"\"name\":\"{name}\"," +
@@ -299,5 +302,58 @@ namespace DataManager
             return s;
         }
 
+        public static Chunk A_D_StringToChunk(this Vector2 pos)
+        {
+            
+            string str = PlayerPrefs.GetString(pos.A_D_GetChunkSavePrefix());
+            if (str == "") return null;
+            str = str.Remove(str.Length - 1);
+            JObject data = JObject.Parse(str);
+
+            Chunk chunk = new Chunk((int)data["x"], (int)data["y"], data["biome"].ToString().A_D_StringToBiome());
+            foreach (JObject env in data["enviroment"])
+            {
+                EnviromentObject e = null;
+                foreach (var envo in EnviromentManager.instance.enviromentObjects)
+                {
+                    if (env["name"].ToString().Replace("(Clone)", "") == envo.prefab.name)
+                        e = envo;
+                }
+
+
+                string name = e.prefab.name;
+                int x = (int)env["x"];
+                int y = (int)env["y"];
+                //float HPM = 0;
+                //if (Envo.GetComponentInChildren<EnvoObject>() != null && Envo.GetComponentInChildren<EnvoObject>().thisObject != null)
+                //{
+                //    HPM = Envo.GetComponentInChildren<EnvoObject>().thisObject.HP;
+                //    EnviromentType type = Envo.GetComponentInChildren<EnvoObject>().thisObject.type;
+                //}
+                //env.HP = HPM;
+                chunk.enviroment.Add(new Enviroment(x, y, e));
+
+
+            }
+            return chunk;
+
+        }
+
+        public static string A_D_GetChunkSavePrefix(this Vector2 pos)
+        {
+
+            return OverworldGeneration.instance.currWorld.getSavePrefix() + $"Overworld-Chunk-{pos.x}-{pos.y}";
+            
+        }
+        public static string A_D_GetChunkSavePrefix(this Chunk ch)
+        {
+            return OverworldGeneration.instance.currWorld.getSavePrefix() + $"Overworld-Chunk-{ch.x}-{ch.y}";
+        }
+
+        public static biome A_D_StringToBiome(this string str)
+        {
+            biome.TryParse(str, out biome bi);
+            return bi;
+        }
     }
 }

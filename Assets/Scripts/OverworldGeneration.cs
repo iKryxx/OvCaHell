@@ -15,7 +15,7 @@ public class OverworldGeneration : MonoBehaviour
     public LayerMask forbiddenHouse;
 
     public Dictionary<Vector2, Chunk> chunksToGenerate = new Dictionary<Vector2, Chunk>();
-    public Dictionary<Vector2, Chunk> chunksToRegenerate = new Dictionary<Vector2, Chunk>();
+    public Dictionary<Vector2, string> chunksToRegenerate = new Dictionary<Vector2, string>();
     public List<Chunk> chunksToInstantiate = new List<Chunk>();
 
     //WorldSettings
@@ -93,7 +93,7 @@ public class OverworldGeneration : MonoBehaviour
             {
                 for (int y = currentChunk.y - renderDistance - 1; y <= currentChunk.y + renderDistance + 1; y++)
                 {
-                    if(allChunks.TryGetValue(new Vector2(x,y), out var chunk) && !activeChunks.ContainsKey(new Vector2(x, y)))
+                    if(allChunks.TryGetValue(new Vector2(x,y), out var chunk) && !activeChunks.ContainsKey(new Vector2(x, y)) && chunk != null)
                     {
                         activeChunks.Add(new Vector2(x, y), chunk);
                     }
@@ -103,14 +103,18 @@ public class OverworldGeneration : MonoBehaviour
             foreach (var chunk in activeChunks.Values)
             {
                 if (currentChunk == null)
-                    break;
-                if (Mathf.Abs(chunk.x - currentChunk.x) > renderDistance || Mathf.Abs(chunk.y - currentChunk.y) > renderDistance)
+                { break; }
+                if (Mathf.Abs(Mathf.Max(chunk.x,currentChunk.x) - Mathf.Min(chunk.x, currentChunk.x)) > renderDistance || Mathf.Abs(Mathf.Max(chunk.y, currentChunk.y) - Mathf.Min(chunk.y, currentChunk.y)) > renderDistance)
                 {
-                    Destroy(chunk.thisObject);
                     toRemove.Add(new Vector2(chunk.x, chunk.y));
+                    chunk.Save();
+                    //Debug.Log(chunk.thisObject.name);
+                    Destroy(chunk.thisObject);
+                    
+
                 }
                 else
-                    chunksToRegenerate.TryAdd(new Vector2(chunk.x, chunk.y), chunk);
+                    chunksToRegenerate.TryAdd(new Vector2(chunk.x, chunk.y), chunk.A_D_ChunkToString());
             }
             foreach (var posi in toRemove)
                 activeChunks.Remove(posi);
@@ -294,17 +298,18 @@ public class OverworldGeneration : MonoBehaviour
         }
     }
     public void RegenerateChunks(){
-        
         for (int o = 0; o <= Mathf.Min(chunksPerFrame,chunksToRegenerate.Count-1); o++)
         {
             Chunk chunk = null;
             if (chunksToRegenerate.Count > 0)
             {
-                chunk = chunksToRegenerate.ElementAt(o).Value;
+                chunk = chunksToRegenerate.ElementAt(o).Key.A_D_StringToChunk();
+                Debug.Log((chunk.thisObject == null) + " " + chunk.x + " " + chunk.y);
+                if (chunk == null) { chunksToRegenerate.Remove(chunksToRegenerate.ElementAt(o).Key); continue; }
             }
             else
                 return;
-            Debug.Log("Call");
+
             GameObject Parent = new GameObject($"{chunk.x} {chunk.y}");
             Parent.transform.position = chunk.GetPos() * ChunkSize;
             Parent.transform.parent = ChunkParent.transform;
@@ -322,66 +327,52 @@ public class OverworldGeneration : MonoBehaviour
 
 
 
+            
             foreach (var ENV in chunk.enviroment)
             {
-
-            }
-            foreach (var ENV in chunk.toBiome().enviroment)
-            {
-                if (chunk.x.IsWithin(-5,5) && chunk.y.IsWithin(-5,5) && !chunk.isChunkLoadedFromFile)
-                    continue;
-
-                if (chunk.isChunkLoadedFromFile)
-                    break;
-                if (Random.Range(0, 101) > ENV.chance)
-                    continue;
-
-                List<EnviromentObject> objs = envo.enviromentObjects.getObjectOfType(ENV.type);
-
+                
 
                 //Debug.Log(objs.Count + " " + chunk.biome.ToString());
-                if (objs.Count == 0)
-                    continue;
+                float x = ENV.x;
+                float y = ENV.y;
 
-                for (int i = 0; i < Random.Range(ENV.min_Amount, ENV.max_Amount + 1); i++)
+                GameObject nin = Instantiate(ENV.envo.prefab, new Vector3(x, y, y / 10000 - 0.0033f), Quaternion.identity);
+
+                if (ENV.envo.mineable)
                 {
-                    //Debug.Log(objs.Count);
-                    EnviromentObject obj = objs[Random.Range(0, objs.Count)];
-                    float x = Random.Range(0, ChunkSize + 1) + chunk.x * ChunkSize;
-                    float y = Random.Range(0, ChunkSize + 1) + chunk.y * ChunkSize;
-
-                    GameObject nin = Instantiate(obj.prefab, new Vector3(x, y, y / 10000 - 0.0033f), Quaternion.identity);
-
-                    if (obj.mineable)
-                    {
                         
-                        nin.AddComponent<IgnoreCollisionScript>();
+                    nin.AddComponent<IgnoreCollisionScript>();
                         
-                    }
-
-                    else
-                    {
-                        nin.AddComponent<PolygonCollider2D>();
-                        if (nin.transform.GetComponentInChildren<PolygonCollider2D>().OverlapCollider(houseFilter, results) > 0)
-                            Destroy(nin);
-                        else
-                            Destroy(nin.GetComponent<PolygonCollider2D>());
-                    }
-
-
-                    nin.transform.parent = chunk.thisObject.transform.Find("Enviroment");
-                    if (obj.mineable)
-                    {
-                        nin.GetComponentInChildren<EnvoObject>().setValues(nin, obj.type, obj.mineable, obj.bestTool, obj.HP, obj.mineableWithFist);
-                        nin.GetComponentInChildren<EnvoObject>().setDrops(obj.drops);
-                    }
-                    else
-                    {
-                        nin.transform.position += new Vector3(0, 0, 0.05f);
-                        nin.isStatic = true;
-                    }
-
                 }
+
+                else
+                {
+                    nin.AddComponent<PolygonCollider2D>();
+                    if (nin.transform.GetComponentInChildren<PolygonCollider2D>().OverlapCollider(houseFilter, results) > 0)
+                        Destroy(nin);
+                    else
+                        Destroy(nin.GetComponent<PolygonCollider2D>());
+                }
+
+                if(!chunk.thisObject.transform.Find("Enviroment"))
+                {
+                    GameObject E = new GameObject("Enviroment");
+                    E.transform.parent = chunk.thisObject.transform;
+                }
+                else
+                    nin.transform.parent = chunk.thisObject.transform.Find("Enviroment");
+                if (ENV.envo.mineable)
+                {
+                    nin.GetComponentInChildren<EnvoObject>().setValues(nin, ENV.envo.type, ENV.envo.mineable, ENV.envo.bestTool, ENV.envo.HP, ENV.envo.mineableWithFist);
+                    nin.GetComponentInChildren<EnvoObject>().setDrops(ENV.envo.drops);
+                }
+                else
+                {
+                    nin.transform.position += new Vector3(0, 0, 0.05f);
+                    nin.isStatic = true;
+                }
+
+                
             }
 
 
@@ -421,6 +412,11 @@ public class OverworldGeneration : MonoBehaviour
         else
             OverworldGeneration.instance.chunksToInstantiate.Add(this);
     }
+    public void Save()
+    {
+        PlayerPrefs.SetString(this.A_D_GetChunkSavePrefix(), this.A_D_ChunkToString());
+    }
+    
 
 }
 
