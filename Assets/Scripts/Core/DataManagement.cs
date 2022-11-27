@@ -237,6 +237,8 @@ namespace DataManager
         {
             string s = "{";
             GameObject chunkGO = chunk.thisObject;
+            //if (chunkGO == null)
+                //Debug.Log($"{chunk.x} {chunk.y}");
             s += $"\"x\":{chunk.x}," +
                  $"\"y\":{chunk.y}," +
                  $"\"biome\":\"{chunk.biome.ToString()}\"," +
@@ -304,11 +306,20 @@ namespace DataManager
 
         public static Chunk A_D_StringToChunk(this Vector2 pos)
         {
-            
-            string str = PlayerPrefs.GetString(pos.A_D_GetChunkSavePrefix());
+            string str = SaveStates.GetKey(pos.A_D_GetChunkSavePrefix());
             if (str == "") return null;
             str = str.Remove(str.Length - 1);
-            JObject data = JObject.Parse(str);
+            JObject data = null;
+            try
+            {
+                data = JObject.Parse(str);
+            }
+            catch
+            {
+                Debug.LogWarning($"ERROR AT CHUNK LOADING AT POSITION {pos.x} {pos.y}");
+                SaveStates.DeleteKey(pos.A_D_GetChunkSavePrefix());
+            }
+            
 
             Chunk chunk = new Chunk((int)data["x"], (int)data["y"], data["biome"].ToString().A_D_StringToBiome());
             foreach (JObject env in data["enviroment"])
@@ -342,12 +353,12 @@ namespace DataManager
         public static string A_D_GetChunkSavePrefix(this Vector2 pos)
         {
 
-            return OverworldGeneration.instance.currWorld.getSavePrefix() + $"Overworld-Chunk-{pos.x}-{pos.y}";
+            return OverworldGeneration.instance.currWorld.getSavePrefix() + $"/Chunks/Overworld/Chunk-{(int)pos.x}-{(int)pos.y}";
             
         }
         public static string A_D_GetChunkSavePrefix(this Chunk ch)
         {
-            return OverworldGeneration.instance.currWorld.getSavePrefix() + $"Overworld-Chunk-{ch.x}-{ch.y}";
+            return OverworldGeneration.instance.currWorld.getSavePrefix() + $"/Chunks/Overworld/Chunk-{ch.x}-{ch.y}";
         }
 
         public static biome A_D_StringToBiome(this string str)

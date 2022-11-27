@@ -16,7 +16,6 @@ public class OverworldGeneration : MonoBehaviour
 
     public Dictionary<Vector2, Chunk> chunksToGenerate = new Dictionary<Vector2, Chunk>();
     public Dictionary<Vector2, string> chunksToRegenerate = new Dictionary<Vector2, string>();
-    public List<Chunk> chunksToInstantiate = new List<Chunk>();
 
     //WorldSettings
     public World currWorld;
@@ -61,7 +60,7 @@ public class OverworldGeneration : MonoBehaviour
             currWorld = crossSceneVariables.World.stringToWorld();
         else
             currWorld = "Debug".stringToWorld();
-        if (PlayerPrefs.HasKey(currWorld.getSavePrefix() + "World") && !resetWorld)
+        if (SaveStates.GetKey(currWorld.getSavePrefix() + "/Player", out var s) && !resetWorld)
             StartCoroutine(SaveLoad.loadWorld(currWorld));
 
         SaveLoad.start();
@@ -83,20 +82,22 @@ public class OverworldGeneration : MonoBehaviour
             GenerateNeighbours();
             currentChunk.hasEntered = true;
         }
+        //Debug.Log(chunksToRegenerate.Count);
         RegenerateChunks();
         RefreshChunks();
         //Hide other Chunks
         if (_currentChunk != currentChunk)
         {
-
-            for (int x = currentChunk.x - renderDistance - 1; x <= currentChunk.x + renderDistance + 1; x++)
+            Dictionary<Vector2, Chunk> newActive = new Dictionary<Vector2, Chunk>();
+            for (int x = curr.x - renderDistance ; x <= curr.x + renderDistance ; x++)
             {
-                for (int y = currentChunk.y - renderDistance - 1; y <= currentChunk.y + renderDistance + 1; y++)
+                
+                for (int y = curr.y - renderDistance ; y <= curr.y + renderDistance ; y++)
                 {
-                    if(allChunks.TryGetValue(new Vector2(x,y), out var chunk) && !activeChunks.ContainsKey(new Vector2(x, y)) && chunk != null)
+                    if(allChunks.TryGetValue(new Vector2(x,y), out var chunk) && /*!activeChunks.ContainsKey(new Vector2(x, y)) &&*/ chunk != null)
                     {
-                        activeChunks.Add(new Vector2(x, y), chunk);
-                    }
+                        newActive.Add(new Vector2(x, y), chunk);
+                    } else if (SaveStates.GetKey(new Vector2(x, y).A_D_GetChunkSavePrefix(),out var s)) chunksToRegenerate.TryAdd(new Vector2(x, y), "");
                 }
             }
             List<Vector2> toRemove = new List<Vector2>();
@@ -106,27 +107,42 @@ public class OverworldGeneration : MonoBehaviour
                 { break; }
                 if (Mathf.Abs(Mathf.Max(chunk.x,currentChunk.x) - Mathf.Min(chunk.x, currentChunk.x)) > renderDistance || Mathf.Abs(Mathf.Max(chunk.y, currentChunk.y) - Mathf.Min(chunk.y, currentChunk.y)) > renderDistance)
                 {
-                    toRemove.Add(new Vector2(chunk.x, chunk.y));
+                    //if (chunk.thisObject == null) Debug.Log($"chunk null at {chunk.x} {chunk.y}");
+                   
                     chunk.Save();
-                    //Debug.Log(chunk.thisObject.name);
-                    Destroy(chunk.thisObject);
-                    
+                    //Debug.Log("MEEEEEEEEEEEEp   " + GameObject.Find($"{chunk.x} {chunk.y}").name, GameObject.Find($"{chunk.x} {chunk.y}"));
+                    Destroy(GameObject.Find($"{chunk.x} {chunk.y}"));
+                    if (GameObject.Find($"{chunk.x} {chunk.y}") != null)
+                    {
+                        
+                        //Destroy(GameObject.Find($"{chunk.x} {chunk.y}"));
+                        //Debug.Break();
+                    }
+                    allChunks.Remove(chunk.GetPos());
 
                 }
-                else
-                    chunksToRegenerate.TryAdd(new Vector2(chunk.x, chunk.y), chunk.A_D_ChunkToString());
+
             }
-            foreach (var posi in toRemove)
-                activeChunks.Remove(posi);
+            activeChunks = newActive;
         }
-
-
         _currentChunk = currentChunk;
+
+        if(allChunks.Count > renderDistance * renderDistance)
+        {
+            Dictionary<Vector2, Chunk> allChunksCopy = new Dictionary<Vector2, Chunk>(allChunks);
+            foreach (Chunk chunk in allChunksCopy.Values)
+            {
+                if (Mathf.Abs(Mathf.Max(chunk.x, currentChunk.x) - Mathf.Min(chunk.x, currentChunk.x)) > renderDistance || Mathf.Abs(Mathf.Max(chunk.y, currentChunk.y) - Mathf.Min(chunk.y, currentChunk.y)) > renderDistance)
+                {
+                    chunk.Save();
+                    Destroy(GameObject.Find($"{chunk.x} {chunk.y}"));
+                    allChunks.Remove(chunk.GetPos());
+                }
+            }
+        }
 
         if (Input.GetKeyDown(KeyCode.Escape))
             SaveLoad.SaveWorld(currWorld);
-
-        //Generating Villages, one per frame
     }
 
     private void GenerateVillage(Vector2Int pos)
@@ -147,8 +163,13 @@ public class OverworldGeneration : MonoBehaviour
                     continue;
                 if (allChunks.GetChunkAt(x, y) == null && !chunksToGenerate.HasChunk(allChunks.GetChunkAt(x, y)))
                 {
-                    Chunk chunk = new Chunk((int)x, (int)y, GetPerlinNoiseBiome.GenerateBiomeAt(new Vector2(x, y)));
-                    OverworldGeneration.instance.chunksToGenerate.TryAdd(new Vector2(x, y),chunk);
+                    if (SaveStates.GetKey(new Vector2(x, y).A_D_GetChunkSavePrefix(), out string s))
+                        chunksToRegenerate.TryAdd(new Vector2(x, y), "");
+                    else
+                    {
+                        Chunk chunk = new Chunk((int)x, (int)y, GetPerlinNoiseBiome.GenerateBiomeAt(new Vector2(x, y)));
+                        chunksToGenerate.TryAdd(new Vector2(x, y), chunk);
+                    }
                 }
             }
         }
@@ -191,7 +212,11 @@ public class OverworldGeneration : MonoBehaviour
             if (allChunks.TryGetValue(new Vector2(chunk.x, chunk.y), out var ch) == true)
             {
                 chunksToGenerate.Remove(new Vector2(chunk.x, chunk.y));
-                chunksToInstantiate.Remove(chunk);
+                return;
+            }
+            if (chunksToRegenerate.TryGetValue(new Vector2(chunk.x, chunk.y), out var ch2) == true)
+            {
+                chunksToGenerate.Remove(new Vector2(chunk.x, chunk.y));
                 return;
             }
             GameObject Parent = new GameObject($"{chunk.x} {chunk.y}");
@@ -293,7 +318,6 @@ public class OverworldGeneration : MonoBehaviour
             }
             catch (System.ArgumentException) { }
             chunksToGenerate.Remove(new Vector2(chunk.x, chunk.y));
-            chunksToInstantiate.Remove(chunk);
             chunk.enviroment = Parent.transform.A_D_EnviromentOfChunkToEnviroment();
         }
     }
@@ -303,14 +327,18 @@ public class OverworldGeneration : MonoBehaviour
             Chunk chunk = null;
             if (chunksToRegenerate.Count > 0)
             {
+               // Debug.Log("BING CHILLING");
                 chunk = chunksToRegenerate.ElementAt(o).Key.A_D_StringToChunk();
-                Debug.Log((chunk.thisObject == null) + " " + chunk.x + " " + chunk.y);
-                if (chunk == null) { chunksToRegenerate.Remove(chunksToRegenerate.ElementAt(o).Key); continue; }
+                //Debug.Log((chunk.thisObject == null) + " " + chunk.x + " " + chunk.y);
+                if (chunk == null || GameObject.Find($"{chunk.x} {chunk.y}") == true) { chunksToRegenerate.Remove(chunksToRegenerate.ElementAt(o).Key); continue; }
             }
             else
                 return;
 
+            
+
             GameObject Parent = new GameObject($"{chunk.x} {chunk.y}");
+            chunk.thisObject = Parent;
             Parent.transform.position = chunk.GetPos() * ChunkSize;
             Parent.transform.parent = ChunkParent.transform;
             Parent.transform.position = chunk.GetPos() * ChunkSize;
@@ -324,10 +352,15 @@ public class OverworldGeneration : MonoBehaviour
             biome bi = chunk.biome;
             List<Texture2D> currSprites = ChunkInfo.getCorrectSprites(bi);
             int z = Random.Range(0, currSprites.Count);
+            GameObject curr = Instantiate(prefab, new Vector3(chunk.x * ChunkSize + 10, chunk.y * ChunkSize + 10, 1), Quaternion.identity);
+            curr.GetComponent<SpriteRenderer>().sprite = Sprite.Create(currSprites[z], new Rect(0, 0, currSprites[z].width, currSprites[z].height), new Vector2(0.5f, 0.5f));
+            curr.transform.localScale = new Vector3(100, 100, 1);
+            curr.transform.parent = Parent.transform;
+            curr.isStatic = true;
 
 
 
-            
+
             foreach (var ENV in chunk.enviroment)
             {
                 
@@ -393,6 +426,32 @@ public class OverworldGeneration : MonoBehaviour
             chunksToRegenerate.Remove(new Vector2(chunk.x, chunk.y));
         }
     }
+
+
+
+
+    [ContextMenu("DELETE ALL KEYS")]
+    void WIPE()
+    {
+        PlayerPrefs.DeleteAll();
+        Debug.Break();
+    }
+
+    [ContextMenu("TestSave")]
+    void TestSave()
+    {
+        SaveStates.SetKey(currentChunk.A_D_GetChunkSavePrefix(), currentChunk.A_D_ChunkToString());
+    }
+    [ContextMenu("TestLoad")]
+    void TestLoad()
+    {
+        Debug.Log(SaveStates.GetKey(currentChunk.A_D_GetChunkSavePrefix()));
+    }
+    [ContextMenu("TestDelete")]
+    void TestDelete()
+    {
+        SaveStates.DeleteKey(currentChunk.A_D_GetChunkSavePrefix());
+    }
 }
 [System.Serializable] public class Chunk{
     public int x;
@@ -409,12 +468,10 @@ public class OverworldGeneration : MonoBehaviour
         this.biome = type;
         if(biome == biome.Null && !this.generated)
             OverworldGeneration.instance.chunksToGenerate.TryAdd(new Vector2(x,y), new Chunk((int)x, (int)y, GetPerlinNoiseBiome.GenerateBiomeAt(new Vector2(x, y))));
-        else
-            OverworldGeneration.instance.chunksToInstantiate.Add(this);
     }
     public void Save()
     {
-        PlayerPrefs.SetString(this.A_D_GetChunkSavePrefix(), this.A_D_ChunkToString());
+        SaveStates.SetKey(this.A_D_GetChunkSavePrefix(), this.A_D_ChunkToString());
     }
     
 

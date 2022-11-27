@@ -4351,7 +4351,7 @@ MonoBehaviour:
   ChunkSize: 20
   ChunkParent: {fileID: 1401858562}
   player: {fileID: 1343098103}
-  renderDistance: 3
+  renderDistance: 12
   resetWorld: 1
   prefab: {fileID: 6663241992775658138, guid: 787c486ac9dc1f14b839eb915d1067fc, type: 3}
   OverworldBiomes:

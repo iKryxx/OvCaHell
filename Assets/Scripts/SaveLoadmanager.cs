@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
-using System.Threading;
 using static DataManager.DataManagement;
 using System.Linq;
 
 public class SaveLoadmanager : MonoBehaviour
 {
     public string SaveString;
+    public SaveLoadmanager instance;
 
     [ContextMenu("SaveBP")]
     void SaveBackPacks(World world)
     {
         SaveString = A_D_BackpacksToString();
-        PlayerPrefs.SetString(world.getSavePrefix() + "BackPacks",SaveString);
+        SaveStates.SetKey(world.getSavePrefix() + "/BackPacks",SaveString);
     }
 
     [ContextMenu("LoadBP")]
@@ -25,7 +25,7 @@ public class SaveLoadmanager : MonoBehaviour
 
         int Amount = 0;
         int index = 0;
-        SaveString = PlayerPrefs.GetString(world.getSavePrefix() + "BackPacks","");
+        SaveStates.GetKey(world.getSavePrefix() + "/BackPacks",out var SaveString);
         if (SaveString == "" || SaveString == "{}")
             return;
         JArray a = JArray.Parse(SaveString);
@@ -70,13 +70,13 @@ public class SaveLoadmanager : MonoBehaviour
     void SaveInventory(World world)
     {
         SaveString = A_D_InventoryToString();
-        PlayerPrefs.SetString(world.getSavePrefix() + "Inventory", SaveString);
+        SaveStates.SetKey(world.getSavePrefix() + "/Inventory", SaveString);
     }
     [ContextMenu("LoadINV")]
     void LoadInventory(World world)
     {
         InventoryManager.instance.inventory.Container.Clear();
-        SaveString = PlayerPrefs.GetString(world.getSavePrefix() + "Inventory", "");
+        SaveStates.GetKey(world.getSavePrefix() + "/Inventory", out var SaveString);
         if (SaveString == "")
             return;
         int Amount = 0;
@@ -116,74 +116,16 @@ public class SaveLoadmanager : MonoBehaviour
     {
        tryAddWorldToList(world);
 
+        foreach (var ch in OverworldGeneration.instance.allChunks.Values)
+            ch.Save();
 
-        SaveString = A_D_WorldToString();
-        PlayerPrefs.SetString(world.getSavePrefix()+"World", SaveString);
+
         SaveString = A_D_PlayerPosToString();
-        PlayerPrefs.SetString(world.getSavePrefix() + "Player", SaveString);
+        SaveStates.SetKey(world.getSavePrefix() + "/Player", SaveString);
     }
     public IEnumerator loadWorld(World world)
     {
-
-        SaveString = PlayerPrefs.GetString(world.getSavePrefix() + "World");
-
-        JArray JA = JArray.Parse(SaveString);
-        foreach (JObject cData in JA)
-        {
-            Chunk chunk = new Chunk((int)cData["x"], (int)cData["y"], cData["biome"].ToString().toBiome());
-            chunk.isChunkLoadedFromFile = true;
-            
-            
-
-            //Enviroment
-            
-            List<EnviromentObject> objs = OverworldGeneration.instance.envo.enviromentObjects;
-            int ChunkSize = OverworldGeneration.instance.ChunkSize;
-
-            foreach (JObject envo in cData["enviroment"])
-            {
-                EnviromentObject obj = null;
-
-                foreach (var e in objs)
-                {
-                    if (e.prefab.name == envo["name"].ToString())
-                        obj = e;
-                }
-                int x = (int)envo["x"];
-                int y = (int)envo["y"];
-
-
-                GameObject nin = Instantiate(obj.prefab, new Vector3(x, y, 0), Quaternion.identity);
-                if (nin.transform.GetComponentInChildren<CircleCollider2D>() != null)
-                {
-
-                    //Debug.Log(nin.transform.GetComponentInChildren<CircleCollider2D>().OverlapCollider(filter, results) + " " + nin.transform.position.x + " "+ nin.transform.position.y);
-
-                    if (nin.transform.GetComponentInChildren<CircleCollider2D>().OverlapCollider(OverworldGeneration.instance.villageFilter, OverworldGeneration.instance.results) > 0)
-                        Destroy(nin);
-
-                }
-                else
-                {
-                    nin.AddComponent<CircleCollider2D>();
-                    if (nin.transform.GetComponentInChildren<CircleCollider2D>().OverlapCollider(OverworldGeneration.instance.houseFilter, OverworldGeneration.instance.results) > 0)
-                        Destroy(nin);
-                    else
-                        Destroy(nin.GetComponent<CircleCollider2D>());
-                }
-                OverworldGeneration.instance.RefreshChunks();
-                nin.transform.parent = chunk.thisObject.transform.Find("Enviroment");
-                if (obj.mineable)
-                {
-                    nin.GetComponentInChildren<EnvoObject>().setValues(obj.prefab, obj.type, obj.mineable, obj.bestTool, obj.HP, obj.mineableWithFist);
-                    nin.GetComponentInChildren<EnvoObject>().setDrops(obj.drops);
-                }
-                else
-                    nin.isStatic = true;
-
-            }
-        }
-        SaveString = PlayerPrefs.GetString(world.getSavePrefix() + "Player");
+        SaveString = SaveStates.GetKey(world.getSavePrefix() + "/Player");
         if(SaveString == "")
             yield return null;
         JObject JO = JObject.Parse(SaveString);
@@ -196,13 +138,13 @@ public class SaveLoadmanager : MonoBehaviour
 
     void tryAddWorldToList(World world)
     {
-        if (!PlayerPrefs.HasKey("Worlds"))
+        if (!SaveStates.GetKey("/Worlds",out var s))
         {
-            PlayerPrefs.SetString("Worlds",world.Name);
+            SaveStates.SetKey("/Worlds",world.Name);
             return;
         }
 
-        SaveString = PlayerPrefs.GetString("Worlds");
+        SaveString = SaveStates.GetKey("/Worlds");
         string[] list = SaveString.Split(' ');
 
 
@@ -212,7 +154,7 @@ public class SaveLoadmanager : MonoBehaviour
                 return;
         }
         SaveString += " " + world.Name;
-        PlayerPrefs.SetString("Worlds", SaveString);
+        SaveStates.SetKey("/Worlds", SaveString);
     }
 
 

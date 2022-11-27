@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -25,7 +26,7 @@ public class StartMenuManager : MonoBehaviour
     private void Deleted(int k)
     {
         
-        string[] Worlds = PlayerPrefs.GetString("Worlds").Split(' ');
+        string[] Worlds = SaveStates.GetKey("/Worlds").Split(' ');
         Transform menu;
         Menus.TryGetValue(1, out menu);
         if(k == 0)
@@ -61,12 +62,23 @@ public class StartMenuManager : MonoBehaviour
         {
             Menus.Add(menu.Id, menu.MenuTrans);
         }
-
-        if (!PlayerPrefs.HasKey("Worlds"))
+        if (!SaveStates.GetKey("/Worlds", out var s) || s == "")
             return;
-        string[] Worlds = PlayerPrefs.GetString("Worlds").Split(' ');
-
-        for(int i = 0; i < Worlds.Length; i++)
+        
+        List<string> rawWorlds = s.Split(' ').ToList();
+        string newWorlds = "";
+        Debug.Log(rawWorlds.Count);
+        
+        foreach (string world in rawWorlds)
+        {
+            if (SaveStates.HasWorld(world))
+                newWorlds += " "+world;
+        }
+        SaveStates.SetKey("/Worlds", newWorlds);
+        string[] Worlds = newWorlds.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        
+        Debug.Log(Worlds.Length);
+        for (int i = 0; i < Worlds.Length; i++)
         {
             Transform menu = null;
             Menus.TryGetValue(1, out menu);
@@ -97,7 +109,7 @@ public class StartMenuManager : MonoBehaviour
     public void GenerateWorld()
     {
         string name = GameObject.Find("NewWorldName").GetComponent<TextMeshProUGUI>().text.Replace(" ","_").Replace("\u200B","");
-        string[] Worlds = PlayerPrefs.GetString("Worlds").Split(' ');
+        string[] Worlds = SaveStates.GetKey("/Worlds").Split(' ');
 
         for (int i = 0; i < Worlds.Length; i++)
         {
@@ -108,13 +120,15 @@ public class StartMenuManager : MonoBehaviour
                 return;
             }
         }
+        tryAddWorldToList(name.stringToWorld());
         PlayWorld(name);
     }
     public void DeleteWorld(string name)
     {
-        if (!PlayerPrefs.HasKey("Worlds"))
+        if (!SaveStates.GetKey("/Worlds", out var s))
             return;
-        string[] Worlds = PlayerPrefs.GetString("Worlds").Split(' ');
+        string[] Worlds = s.Split(' ');
+
 
         Transform menu;
 
@@ -122,11 +136,8 @@ public class StartMenuManager : MonoBehaviour
         if (Worlds.Length == 1)
         {
 
-            PlayerPrefs.DeleteKey($"Save-{name.Replace("\u200B", "")}-Inventory");
-            PlayerPrefs.DeleteKey($"Save-{name.Replace("\u200B", "")}-World");
-            PlayerPrefs.DeleteKey($"Save-{name.Replace("\u200B", "")}-Backpacks");
-            PlayerPrefs.DeleteKey($"Save-{name.Replace("\u200B", "")}-Player");
-            PlayerPrefs.DeleteKey("Worlds");
+            SaveStates.DeleteWorld(Worlds[0].Replace("\u200B", ""));
+            SaveStates.DeleteKey("/Worlds");
 
             foreach (Transform transform in menu.Find("Main Buttons"))
             {
@@ -144,18 +155,15 @@ public class StartMenuManager : MonoBehaviour
 
         Menus.TryGetValue(2, out menu);
         string str = String.Join(" ", Worlds);
-        PlayerPrefs.DeleteKey($"Save-{name.Replace("\u200B", "")}-Inventory");
-        PlayerPrefs.DeleteKey($"Save-{name.Replace("\u200B", "")}-World");
-        PlayerPrefs.DeleteKey($"Save-{name.Replace("\u200B", "")}-Backpacks");
-        PlayerPrefs.DeleteKey($"Save-{name.Replace("\u200B", "")}-Player");
-        PlayerPrefs.SetString("Worlds",str);
+        SaveStates.DeleteWorld(name.Replace("\u200B", ""));
+        SaveStates.SetKey("/Worlds",str);
 
         foreach (Transform transform in menu.Find("Main Buttons"))
         {
             if(transform.gameObject.name != "Back")
                 Destroy(transform.gameObject);
         }
-        Worlds = PlayerPrefs.GetString("Worlds").Replace("\u200B","").Split(' ');
+        Worlds = SaveStates.GetKey("/Worlds").Replace("\u200B","").Split(' ');
         for (int i = 0; i < Worlds.Length; i++)
         {
             Transform menu__ = null;
@@ -195,5 +203,31 @@ public class StartMenuManager : MonoBehaviour
         Transform menu = null;
         Menus.TryGetValue(ActiveScreen, out menu);
         menu.gameObject.SetActive(true);
+    }
+
+
+
+
+
+
+    void tryAddWorldToList(World world)
+    {
+        if (!SaveStates.GetKey("/Worlds", out var s))
+        {
+            SaveStates.SetKey("/Worlds", world.Name);
+            return;
+        }
+
+        string SaveString = SaveStates.GetKey("/Worlds");
+        string[] list = SaveString.Split(' ');
+
+
+        for (int i = 0; i < list.Length; i++)
+        {
+            if (list[i] == world.Name)
+                return;
+        }
+        SaveString += " " + world.Name;
+        SaveStates.SetKey("/Worlds", SaveString);
     }
 }

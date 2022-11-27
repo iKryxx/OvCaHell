@@ -35,7 +35,7 @@ public class World
 
     public string getSavePrefix()
     {
-        return $"Save-{this.Name}-";
+        return $"/Saves/Save-{this.Name}";
     }
 }
 
